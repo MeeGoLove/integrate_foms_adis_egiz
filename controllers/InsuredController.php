@@ -178,12 +178,12 @@ class InsuredController extends AppController {
                     if ($typedoc == 9
                             or $typedoc == 11
                             or $typedoc == 18
-                            /*or $typedoc == 16
-                            or $typedoc == 12
-                            or $typedoc == 13
-                            or $typedoc == 7
-                            or $typedoc == 6
-                            or $typedoc == 4*/) {
+                    /* or $typedoc == 16
+                      or $typedoc == 12
+                      or $typedoc == 13
+                      or $typedoc == 7
+                      or $typedoc == 6
+                      or $typedoc == 4 */) {
                         $byTypeDoc++;
                         continue;
                     }
@@ -232,110 +232,110 @@ class InsuredController extends AppController {
 
 //9. Попробовать найти информацию в ЕГИЗ
 //РАСКОММЕНТИРОВАТЬ!!!!
-                    
-                      $egizReq = new searchIndividual();
-                      $egizReq->surname = $fam;
-                      $egizReq->name = $imya;
-                      $egizReq->patrName = $otch;
-                      $egizReq->birthDate = $dr;
-                      $docsEgiz = InsuredController::returnDocs($egizReq);
-                      //Если найдено в ЕГИЗ, заполняем паспортные данные из ЕГИЗ
-                      if (@gettype($docsEgiz) != "NULL") {
-                      //9.1 Самое простое СНИЛС
-                      if (count($docsEgiz["snils"]) != 0) {
-                      $writeSpreadsheet->getActiveSheet()->
-                      setCellValueExplicit("L" . $j, InsuredController::convertSNILS($docsEgiz["snils"]["nomdoc"]), 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("I" . ($j - 8), InsuredController::convertSNILS($docsEgiz["snils"]["nomdoc"]), 's');
-                      } else {
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("L" . $j, $snils, 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("I" . ($j - 8), $snils, 's');
-                      }
 
-                      //9.2 Далее полис
-                      //8.7 Если в ЕГИЗ найден полис, отбрасываем человека
-                      if (count($docsEgiz["oms"]) != 0) {
-                      // $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("K" . $j, $docsEgiz["oms"]["nomdoc"], 's');
-                      //$writeSpreadsheet->getActiveSheet()->setCellValueExplicit("J" . $j, $docsEgiz["oms"]["seria"], 's');
-                      //$writeQuery->getActiveSheet()->setCellValueExplicit("M" . ($j - 8), $docsEgiz["oms"]["nomdoc"], 's');
-                      //$writeQuery->getActiveSheet()->setCellValueExplicit("L" . ($j - 8), $docsEgiz["oms"]["seria"], 's');
-                      // $x = $x . "Найден полис ОМС в ЕГИСЗ $j<br>";
-                      //$hasNumberOMS++;
-                      //continue;
-                      }
+                    $egizReq = new searchIndividual();
+                    $egizReq->surname = $fam;
+                    $egizReq->name = $imya;
+                    $egizReq->patrName = $otch;
+                    $egizReq->birthDate = $dr;
+                    $docsEgiz = InsuredController::returnDocs($egizReq);
+                    //Если найдено в ЕГИЗ, заполняем паспортные данные из ЕГИЗ
+                    if (@gettype($docsEgiz) != "NULL") {
+                        //9.1 Самое простое СНИЛС
+                        if (count($docsEgiz["snils"]) != 0) {
+                            $writeSpreadsheet->getActiveSheet()->
+                                    setCellValueExplicit("L" . $j, InsuredController::convertSNILS($docsEgiz["snils"]["nomdoc"]), 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("I" . ($j - 8), InsuredController::convertSNILS($docsEgiz["snils"]["nomdoc"]), 's');
+                        } else {
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("L" . $j, $snils, 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("I" . ($j - 8), $snils, 's');
+                        }
 
-                      //9.3 Паспорт или свидетельство о рождении
-                      //Если есть паспорт
-                      if (count($docsEgiz["passport"]) != 0) {
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, "14", 's');
-                      $passport = InsuredController::convertPassport($docsEgiz["passport"]["seria"], $docsEgiz["passport"]["nomdoc"]);
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $passport[1], 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $passport[0], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "14", 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $passport[1], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $passport[0], 's');
-                      } elseif (count($docsEgiz["birthcert"]) != 0) {
-                      if (gettype($docsEgiz["birthcert"]["seria"]) == "array")
-                      $docsEgiz["birthcert"]["seria"] = "";
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, "3", 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $docsEgiz["birthcert"]["seria"], 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $docsEgiz["birthcert"]["nomdoc"], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "3", 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $docsEgiz["birthcert"]["seria"], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $docsEgiz["birthcert"]["nomdoc"], 's');
-                      } else {
-                      if ($typedoc == 14) {
-                      $passport = InsuredController::convertPassport($serdoc, $nomdoc);
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $passport[0], 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $passport[1], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "14", 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $passport[1], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $passport[0], 's');
-                      } else {
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $serdoc, 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $nomdoc, 's');
-                      if ($typedoc <> 0) {
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), $typedoc, 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $serdoc, 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $nomdoc, 's');
-                      }
-                      }
-                      }
+                        //9.2 Далее полис
+                        //8.7 Если в ЕГИЗ найден полис, отбрасываем человека
+                        if (count($docsEgiz["oms"]) != 0) {
+                            // $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("K" . $j, $docsEgiz["oms"]["nomdoc"], 's');
+                            //$writeSpreadsheet->getActiveSheet()->setCellValueExplicit("J" . $j, $docsEgiz["oms"]["seria"], 's');
+                            //$writeQuery->getActiveSheet()->setCellValueExplicit("M" . ($j - 8), $docsEgiz["oms"]["nomdoc"], 's');
+                            //$writeQuery->getActiveSheet()->setCellValueExplicit("L" . ($j - 8), $docsEgiz["oms"]["seria"], 's');
+                            // $x = $x . "Найден полис ОМС в ЕГИСЗ $j<br>";
+                            //$hasNumberOMS++;
+                            //continue;
+                        }
 
-                      if ($docsEgiz["birthday"] != "") {
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("F" . $j, $docsEgiz["birthday"], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("E" . ($j - 8), $docsEgiz["birthday"], 's');
-                      } else {
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("F" . $j, $dr, 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("E" . ($j - 8), $dr, 's');
-                      }
-                      $a++;
-                      } else {
-                      $writeSpreadsheet->getActiveSheet()->setCellValue("F" . $j, $dr);
-                      $writeQuery->getActiveSheet()->setCellValue("E" . ($j - 8), $dr);
-                      $writeSpreadsheet->getActiveSheet()->setCellValue("K" . $j, $npolis);
-                      $writeSpreadsheet->getActiveSheet()->setCellValue("L" . $j, $snils);
-                      if ($typedoc == 14) {
-                      $passport = InsuredController::convertPassport($serdoc, $nomdoc);
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $passport[0], 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $passport[1], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "14", 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $passport[1], 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $passport[0], 's');
-                      } else {
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $serdoc, 's');
-                      $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $nomdoc, 's');
-                      if ($typedoc <> 0) {
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), $typedoc, 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $serdoc, 's');
-                      $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $nomdoc, 's');
-                      }
-                      }
-                      }
-                      
+                        //9.3 Паспорт или свидетельство о рождении
+                        //Если есть паспорт
+                        if (count($docsEgiz["passport"]) != 0) {
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, "14", 's');
+                            $passport = InsuredController::convertPassport($docsEgiz["passport"]["seria"], $docsEgiz["passport"]["nomdoc"]);
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $passport[1], 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $passport[0], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "14", 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $passport[1], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $passport[0], 's');
+                        } elseif (count($docsEgiz["birthcert"]) != 0) {
+                            if (gettype($docsEgiz["birthcert"]["seria"]) == "array")
+                                $docsEgiz["birthcert"]["seria"] = "";
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, "3", 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $docsEgiz["birthcert"]["seria"], 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $docsEgiz["birthcert"]["nomdoc"], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "3", 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $docsEgiz["birthcert"]["seria"], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $docsEgiz["birthcert"]["nomdoc"], 's');
+                        } else {
+                            if ($typedoc == 14) {
+                                $passport = InsuredController::convertPassport($serdoc, $nomdoc);
+                                $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
+                                $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $passport[0], 's');
+                                $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $passport[1], 's');
+                                $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "14", 's');
+                                $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $passport[1], 's');
+                                $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $passport[0], 's');
+                            } else {
+                                $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
+                                $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $serdoc, 's');
+                                $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $nomdoc, 's');
+                                if ($typedoc <> 0) {
+                                    $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), $typedoc, 's');
+                                    $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $serdoc, 's');
+                                    $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $nomdoc, 's');
+                                }
+                            }
+                        }
+
+                        if ($docsEgiz["birthday"] != "") {
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("F" . $j, $docsEgiz["birthday"], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("E" . ($j - 8), $docsEgiz["birthday"], 's');
+                        } else {
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("F" . $j, $dr, 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("E" . ($j - 8), $dr, 's');
+                        }
+                        $a++;
+                    } else {
+                        $writeSpreadsheet->getActiveSheet()->setCellValue("F" . $j, $dr);
+                        $writeQuery->getActiveSheet()->setCellValue("E" . ($j - 8), $dr);
+                        $writeSpreadsheet->getActiveSheet()->setCellValue("K" . $j, $npolis);
+                        $writeSpreadsheet->getActiveSheet()->setCellValue("L" . $j, $snils);
+                        if ($typedoc == 14) {
+                            $passport = InsuredController::convertPassport($serdoc, $nomdoc);
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $passport[0], 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $passport[1], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), "14", 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $passport[1], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $passport[0], 's');
+                        } else {
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("M" . $j, $typedoc, 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("N" . $j, $serdoc, 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("O" . $j, $nomdoc, 's');
+                            if ($typedoc <> 0) {
+                                $writeQuery->getActiveSheet()->setCellValueExplicit("F" . ($j - 8), $typedoc, 's');
+                                $writeQuery->getActiveSheet()->setCellValueExplicit("G" . ($j - 8), $serdoc, 's');
+                                $writeQuery->getActiveSheet()->setCellValueExplicit("H" . ($j - 8), $nomdoc, 's');
+                            }
+                        }
+                    }
+
 
 
 // 10 Окончание формирования файлов 
@@ -708,7 +708,6 @@ class InsuredController extends AppController {
         return $this->render('generate-insured', ['model' => $model, 'x' => $x]);
     }
 
-
     /**
      * Удаляет папку (выдрано с инета)
      * @param type $dir удаляемая папка
@@ -808,78 +807,27 @@ class InsuredController extends AppController {
      * Генерация файла для статиста и стола справок
      * @return type
      */
-    public function actionReportInsured() {
+    public function actionReportInsured($message = "") {
         $model = new InsuredXls();
         if (Yii::$app->request->isPost) {
             $model->xlsFile = UploadedFile::getInstance($model, 'xlsFile');
             if ($model->upload()) {
-                /**
-                 * Действуй!!!
-                 */
-//открытие исходного файла
-                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xls");
-                $notInsuredXLS = $reader->load("uploads/insured.xls");
-//для статиста
-                $writeXls = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
-                $statXLS = $writeXls->load("templates/res-stat.xlsx");
-//для стола справок
-                /* $writeXls1 = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xls");
-                  $helpDeskXLS = $writeXls1->load("templates/res-help.xls"); */
-
-                $notInsuredXLS->setActiveSheetIndex(0);
-                $statXLS->setActiveSheetIndex(0);
-//$helpDeskXLS->setActiveSheetIndex(0);
-//Инциализация
-                $needBreak = false;
-                $i = 3;
-                $start = 16;
-                $cost = "1260,26";
-
-                while (true) {
-                    if ($needBreak) {
-                        break;
-                    }
-
-                    $fio = $notInsuredXLS->getActiveSheet()->getCell("B" . $start)->getCalculatedValue();
-                    $pol = $notInsuredXLS->getActiveSheet()->getCell("C" . $start)->getValue();
-                    $doc = $notInsuredXLS->getActiveSheet()->getCell("D" . $start)->getCalculatedValue();
-                    $dr = $notInsuredXLS->getActiveSheet()->getCell("E" . $start)->getValue();
-                    $adres = $notInsuredXLS->getActiveSheet()->getCell("F" . $start)->getCalculatedValue();
-                    $ds = $notInsuredXLS->getActiveSheet()->getCell("G" . $start)->getValue();
-                    $dprm = $notInsuredXLS->getActiveSheet()->getCell("H" . $start)->getValue();
-                    $neotl = $notInsuredXLS->getActiveSheet()->getCell("I" . $start)->getCalculatedValue();
-                    $extr = $notInsuredXLS->getActiveSheet()->getCell("J" . $start)->getCalculatedValue();
-                    $rezl = $notInsuredXLS->getActiveSheet()->getCell("K" . $start)->getValue();
-                    $ngod = $notInsuredXLS->getActiveSheet()->getCell("Z" . $start)->getValue();
-                    $checkBreak = $notInsuredXLS->getActiveSheet()->getCell("AK" . $start)->getValue();
-
-
-                    $statXLS->getActiveSheet()->getCell("A" . $i)->setValue($i - 2);
-                    $statXLS->getActiveSheet()->getCell("B" . $i)->setValueExplicit($fio, 's');
-                    $statXLS->getActiveSheet()->getCell("C" . $i)->setValueExplicit($pol, 's');
-                    $statXLS->getActiveSheet()->getCell("D" . $i)->setValueExplicit($doc, 's');
-                    $statXLS->getActiveSheet()->getCell("E" . $i)->setValueExplicit($dr, 's');
-                    $statXLS->getActiveSheet()->getCell("F" . $i)->setValueExplicit($adres, 's');
-                    $statXLS->getActiveSheet()->getCell("G" . $i)->setValueExplicit($ds, 's');
-                    $statXLS->getActiveSheet()->getCell("H" . $i)->setValueExplicit($dprm, 's');
-                    $statXLS->getActiveSheet()->getCell("I" . $i)->setValueExplicit($neotl, 's');
-                    $statXLS->getActiveSheet()->getCell("J" . $i)->setValueExplicit($extr, 's');
-                    $statXLS->getActiveSheet()->getCell("K" . $i)->setValueExplicit($rezl, 's');
-                    $statXLS->getActiveSheet()->getCell("L" . $i)->setValueExplicit($cost, 's');
-
-                    $i++;
-                    $start++;
-
-                    if ($checkBreak == "stop") {
-                        $needBreak = true;
-                    }
+                if ($model->reportInsured()) {
+                    $message = "<h4>Файлы для статиста "
+                            . "и стола справок успешно сгенерированы!</h4>"
+                            . "<p><Для статиста файл вы можете "
+                            . "скачать по <a href = 'uploads/незастрахованные статист.xlsx'>ссылке</a>/p>"
+                            . "<p><Для стола справок файл "
+                            . "вы можете скачать по <a href = 'uploads/незастрахованные стол справок.xls'>ссылке</a>/p>";
+                } else {
+                    $message = "<h4>Ошибка!!! Не удалось сгенерировать файлы!</h4>";
                 }
-                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($statXLS);
-                $writer->save("uploads/незастрахованные статист.xlsx");
-                return $this->render('report-insured', ['model' => $model]);
+                return $this->render('report-insured', ['model' => $model,
+                            'message' => $message]);
             }
         } else
-            return $this->render('report-insured', ['model' => $model]);
+            return $this->render('report-insured', ['model' => $model,
+                        'message' => $message]);
     }
 
     /**
