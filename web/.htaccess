@@ -1,0 +1,13 @@
+Order Deny,Allow
+Deny from all
+Allow from 172.30.
+Allow from 10.10.1.
+Allow from .smp
+Allow from .smp.oren
+RewriteRule ^/.htaccess$ - [G]
+Options -Indexes
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php
