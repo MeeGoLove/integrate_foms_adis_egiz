@@ -298,7 +298,7 @@ class FomsController extends AppController {
                 $hm->Z_SL->SL->DATE_2 = $hm->Z_SL->SL->DATE_1;
                 $temp++;
                 //если вызов неотложный, нужно еще поправить в узле USL
-                if ((string) $hm->Z_SL->SUMV === "629.30") {
+                if ((string) $hm->Z_SL->SUMV === "662.02") {
                     $temp1++;
                     $hm->Z_SL->SL->USL->DATE_OUT = $hm->Z_SL->SL->USL->DATE_IN;
                     //echo "Дата вызова неотложки поправлена, № карты: " . $hm->Z_SL->SL->NHISTORY . "\r\n";
@@ -328,12 +328,12 @@ class FomsController extends AppController {
                 $hm->Z_SL->SL->COMENTSL->addChild('TIME_CALL', $time1);
                 $hm->Z_SL->SL->COMENTSL->addChild('TIME_MISSION', $time2);
                 if (substr($hm->Z_SL->SL->IDDOKT, 0, 1) == "1") {
-                    $hm->Z_SL->SUMV = 3548.12;
-                    //echo $hm->Z_SL->SL->IDDOKT . " стоимость вызова 3548.12\r\n";
+                    $hm->Z_SL->SUMV = 3725.53;
+                    //echo $hm->Z_SL->SL->IDDOKT . " стоимость вызова 3725.53\r\n";
                 }
                 if (substr($hm->Z_SL->SL->IDDOKT, 0, 1) == "2") {
-                    $hm->Z_SL->SUMV = 1828.77;
-                    //echo $hm->Z_SL->SL->IDDOKT . " стоимость вызова 1828.77\r\n";
+                    $hm->Z_SL->SUMV = 1920.21;
+                    //echo $hm->Z_SL->SL->IDDOKT . " стоимость вызова 1920.21\r\n";
                 }
             }
             //если нет полиса, то нужно удалить узел VPOLIS, значение 0 недопустимо! 
@@ -358,9 +358,9 @@ class FomsController extends AppController {
                     // до апреля P_CEL был 2 а не 1.1
                     //для неотложки добавляем узел P_CEL со значением 1.1                        
                     //Также для неотложки сверяем время прибытия, оно не должно быть после 19:00
-                    if ((string) $hm->Z_SL->SUMV === "629.30") {
-                        $hm->Z_SL->SUMV = "629.30";
-                        $hm->Z_SL->SL->SUM_M = "629.30";
+                    if ((string) $hm->Z_SL->SUMV === "662.02") {
+                        $hm->Z_SL->SUMV = "662.02";
+                        $hm->Z_SL->SL->SUM_M = "662.02";
                         $hm->Z_SL->SL->addChild('P_CEL', '1.1');
                         $neotl++; //счетчик неотложных вызовов
 
@@ -370,12 +370,12 @@ class FomsController extends AppController {
                             unset($hm->Z_SL->SL->COMENTSL->METHOD);
                             unset($hm->Z_SL->SL->P_CEL);
                             if (substr($hm->Z_SL->SL->IDDOKT, 0, 1) == "1") {
-                                $hm->Z_SL->SUMV = "3548.12";
-                                $hm->Z_SL->SL->SUM_M = "3548.12";
+                                $hm->Z_SL->SUMV = "3725.53";
+                                $hm->Z_SL->SL->SUM_M = "3725.53";
                             }
                             if (substr($hm->Z_SL->SL->IDDOKT, 0, 1) >= 2) {
-                                $hm->Z_SL->SUMV = "1828.77";
-                                $hm->Z_SL->SL->SUM_M = "1828.77";
+                                $hm->Z_SL->SUMV = "1920.21";
+                                $hm->Z_SL->SL->SUM_M = "1920.21";
                             }
                             $hm->Z_SL->FOR_POM = 1;
                             $hm->Z_SL->IDSP = 36;
@@ -384,14 +384,14 @@ class FomsController extends AppController {
                         }
                     }
                     //                +++ОБЫЧНЫЕ ВЫЗОВЫ+++					
-                    if ((string) $hm->Z_SL->SUMV === "1828.77") {
-                        $hm->Z_SL->SUMV = "1828.77";
-                        $hm->Z_SL->SL->SUM_M = "1828.77";
+                    if ((string) $hm->Z_SL->SUMV === "1920.21") {
+                        $hm->Z_SL->SUMV = "1920.21";
+                        $hm->Z_SL->SL->SUM_M = "1920.21";
                         $feld++;
                     } //счетчик фельдшерских вызовов
-                    if ((string) $hm->Z_SL->SUMV === "3548.12") {
-                        $hm->Z_SL->SUMV = "3548.12";
-                        $hm->Z_SL->SL->SUM_M = "3548.12";
+                    if ((string) $hm->Z_SL->SUMV === "3725.53") {
+                        $hm->Z_SL->SUMV = "3725.53";
+                        $hm->Z_SL->SL->SUM_M = "3725.53";
                         $vr++;
                     } //счетчик врачебных вызовов
                     //генерируем SL_ID
@@ -412,18 +412,18 @@ class FomsController extends AppController {
                     $h = 0;
                     for ($h = 0; $h < $count; $h++) {
                         if ((integer) $hm->Z_SL->SL->NHISTORY === (integer) $arr[$h]) {
-                            if ((string) $hm->Z_SL->SUMV === "629.30") {
+                            if ((string) $hm->Z_SL->SUMV === "662.02") {
                                 $j++;
                             } else {
-                                if ((string) $hm->Z_SL->SUMV === "1828.77") {
+                                if ((string) $hm->Z_SL->SUMV === "1920.21") {
                                     $vr_j++;
                                 };
-                                if ((string) $hm->Z_SL->SUMV === "3548.12") {
+                                if ((string) $hm->Z_SL->SUMV === "3725.53") {
                                     $feld_j++;
                                 };
                                 $hm->Z_SL->IDSP = "40";
-                                $hm->Z_SL->SUMV = "629.30";
-                                $hm->Z_SL->SL->SUM_M = "629.30";
+                                $hm->Z_SL->SUMV = "662.02";
+                                $hm->Z_SL->SL->SUM_M = "662.02";
                                 $hm->Z_SL->SL->addChild('P_CEL', '1.1');
                                 $hm->Z_SL->SL->COMENTSL->addChild('METHOD', '8.1');
                                 $hm->Z_SL->SL->addChild('USL');
@@ -437,8 +437,8 @@ class FomsController extends AppController {
                                 $hm->Z_SL->SL->USL->addChild('DS', $hm->Z_SL->SL->DS1);
                                 $hm->Z_SL->SL->USL->addChild('CODE_USL', '-');
                                 $hm->Z_SL->SL->USL->addChild('KOL_USL', '1');
-                                $hm->Z_SL->SL->USL->addChild('TARIF', '629.30');
-                                $hm->Z_SL->SL->USL->addChild('SUMV_USL', '629.30');
+                                $hm->Z_SL->SL->USL->addChild('TARIF', '662.02');
+                                $hm->Z_SL->SL->USL->addChild('SUMV_USL', '662.02');
                                 $hm->Z_SL->SL->USL->addChild('PRVS', $hm->Z_SL->SL->PRVS);
                                 $hm->Z_SL->SL->USL->addChild('CODE_MD', $hm->Z_SL->SL->IDDOKT);
                                 $j++;
@@ -456,14 +456,14 @@ class FomsController extends AppController {
                     $hm->N_ZAP = $n_zapOnko;
                     $hm->Z_SL->IDCASE = $n_zapOnko;
                     //                +++ОБЫЧНЫЕ ВЫЗОВЫ+++					
-                    if ((string) $hm->Z_SL->SUMV === "1828.77") {
-                        $hm->Z_SL->SUMV = "1828.77";
-                        $hm->Z_SL->SL->SUM_M = "1828.77";
+                    if ((string) $hm->Z_SL->SUMV === "1920.21") {
+                        $hm->Z_SL->SUMV = "1920.21";
+                        $hm->Z_SL->SL->SUM_M = "1920.21";
                         $feldOnko++;
                     } //счетчик фельдшерских вызовов
-                    if ((string) $hm->Z_SL->SUMV === "3548.12") {
-                        $hm->Z_SL->SUMV = "3548.12";
-                        $hm->Z_SL->SL->SUM_M = "3548.12";
+                    if ((string) $hm->Z_SL->SUMV === "3725.53") {
+                        $hm->Z_SL->SUMV = "3725.53";
+                        $hm->Z_SL->SL->SUM_M = "3725.53";
                         $vrOnko++;
                     }
                     //генерируем SL_ID
@@ -501,19 +501,19 @@ class FomsController extends AppController {
                 //                     +++НЕОТЛОЖКА+++
                 //для неотложки добавляем узел P_CEL со значением 2
                 //
-		if ((string) $hm->Z_SL->SUMV === "629.30") {
-                    $hm->Z_SL->SUMV = "629.30";
-                    $hm->Z_SL->SL->SUM_M = "629.30";
+		if ((string) $hm->Z_SL->SUMV === "662.02") {
+                    $hm->Z_SL->SUMV = "662.02";
+                    $hm->Z_SL->SL->SUM_M = "662.02";
                     $hm->Z_SL->SL->addChild('P_CEL', '1.1');
                 }
                 //                +++ОБЫЧНЫЕ ВЫЗОВЫ+++					
-                if ((string) $hm->Z_SL->SUMV === "1828.77") {
-                    $hm->Z_SL->SUMV = "1828.77";
-                    $hm->Z_SL->SL->SUM_M = "1828.77";
+                if ((string) $hm->Z_SL->SUMV === "1920.21") {
+                    $hm->Z_SL->SUMV = "1920.21";
+                    $hm->Z_SL->SL->SUM_M = "1920.21";
                 }
-                if ((string) $hm->Z_SL->SUMV === "3548.12") {
-                    $hm->Z_SL->SUMV = "3548.12";
-                    $hm->Z_SL->SL->SUM_M = "3548.12";
+                if ((string) $hm->Z_SL->SUMV === "3725.53") {
+                    $hm->Z_SL->SUMV = "3725.53";
+                    $hm->Z_SL->SL->SUM_M = "3725.53";
                 }
                 //генерируем SL_ID
                 $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
@@ -555,13 +555,13 @@ class FomsController extends AppController {
             $hm_i++;
             //генерируем SL_ID
             $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
-            if ((string) $hm->Z_SL->SUMV === "629.30") {
+            if ((string) $hm->Z_SL->SUMV === "662.02") {
                 $neotl++;
             }
-            if ((string) $hm->Z_SL->SUMV === "3548.12") {
+            if ((string) $hm->Z_SL->SUMV === "3725.53") {
                 $vr++;
             }
-            if ((string) $hm->Z_SL->SUMV === "1828.77") {
+            if ((string) $hm->Z_SL->SUMV === "1920.21") {
                 $feld++;
             }
             $res = $hm->asXML();
@@ -587,13 +587,13 @@ class FomsController extends AppController {
             $hm_iOnko++;
             //генерируем SL_ID
             $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
-            if ((string) $hm->Z_SL->SUMV === "629.30") {
+            if ((string) $hm->Z_SL->SUMV === "662.02") {
                 $neotl++;
             }
-            if ((string) $hm->Z_SL->SUMV === "3548.12") {
+            if ((string) $hm->Z_SL->SUMV === "3725.53") {
                 $vr++;
             }
-            if ((string) $hm->Z_SL->SUMV === "1828.77") {
+            if ((string) $hm->Z_SL->SUMV === "1920.21") {
                 $feld++;
             }
             $res = $hm->asXML();
@@ -613,7 +613,7 @@ class FomsController extends AppController {
         $end = date("h:i:s");
         //отчитываемся о проделанной работе
         $log = $log . "\r\n\r\nПроверено " . $hm_i . " случаев на сумму " . $sumv . " рублей\r\n";
-        $log = $log . "на 1828.77 руб: " . $feld . "\r\nна 3548.12 rub: " . $vr . " на 629.30 rub: " . $neotl . "\r\n";
+        $log = $log . "на 1920.21 руб: " . $feld . "\r\nна 3725.53 rub: " . $vr . " на 662.02 rub: " . $neotl . "\r\n";
         $log = $log . "Сохранено " . ($n_zap - 1) . " HM-zap " . $lhm_i . " LHM-zap\r\n";
         $log = $log . "Удалено " . $not_add . " HM-zap " . $not_add_lhm . " LHM-zap\r\n";
         $log = $log . "Переделано в неотложку " . $j . " записей. Из врачебного вызова " . $vr_j . " записей. Из фельдшерского вызова " . $feld_j . " LHM-zap\r\n";
@@ -622,7 +622,7 @@ class FomsController extends AppController {
         $log = $log . "Время старта: <b>$start</b> \r\nВремя окончания: <b>$end</b>\r\n\r\n";
         $log = $log . "<hr><h4>Онкореестр:</h4>\r\n";
         $log = $log . "Проверено " . $hm_iOnko . " случаев на сумму " . $sumvOnko . " рублей\r\n";
-        $log = $log . "на 1828.77 руб: " . $feldOnko . "\r\nна 3548.12 rub: " . $vrOnko . "\r\n";
+        $log = $log . "на 1920.21 руб: " . $feldOnko . "\r\nна 3725.53 rub: " . $vrOnko . "\r\n";
         $log = $log . "Время старта: <b>$start</b> \r\nВремя окончания: <b>$end</b>\r\n\r\n";
         \Yii::info("$log", 'foms');
         return ['sumvHM' => $sumv, 'sumvCM' => $sumvOnko];
