@@ -11,7 +11,8 @@ $this->title = 'Выгрузка в ФОМС';
 
 
 <h3>1 шаг выгрузки</h3>
-<p>Введите даты суббот и воскресений отчетного месяца</p>
+<p>Введите даты суббот и воскресений отчетного месяца, а также все дни в которые 
+    не работала неотложная помощь поликлиник</p>
 <p>Праздничные дни заносите в воскресенья</p>
 <p>Таким образом Вы указываете дни, в которые службы неотложной помощи не работали</p>
 <?php
@@ -73,6 +74,35 @@ $form->field($model, 'sundays')->widget(MultipleInput::className(), [
         ]
     ]
 ]);
+?>
+<?=
+$form->field($model, 'start')->widget(kartik\date\DatePicker::className(), ['data' => $model,
+    'type' => \kartik\date\DatePicker::TYPE_COMPONENT_PREPEND,
+    'language' => 'ru',
+    'removeButton' => false,
+    'pluginOptions' => [
+        'autoclose' => true,
+        'format' => 'yyyy-mm-dd',
+        'clearBtn' => false,
+        'minViewMode' => 0,
+        'maxViewMode' => 2,
+        'width' => 80,
+]]);
+?>
+
+<?=
+$form->field($model, 'end')->widget(kartik\date\DatePicker::className(), ['data' => $model,
+    'type' => \kartik\date\DatePicker::TYPE_COMPONENT_PREPEND,
+    'language' => 'ru',
+    'removeButton' => false,
+    'pluginOptions' => [
+        'autoclose' => true,
+        'format' => 'yyyy-mm-dd',
+        'clearBtn' => false,
+        'minViewMode' => 0,
+        'maxViewMode' => 2,
+        'width' => 80,
+]]);
 ?>
 <?= Html::submitButton('Запомнить субботы и воскресенья', ['class' => 'btn btn-success']); ?>
 <?php ActiveForm::end();

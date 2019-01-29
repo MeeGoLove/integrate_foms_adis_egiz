@@ -26,10 +26,8 @@ use yii\bootstrap\ActiveForm;
 class FomsController extends AppController {
 
     /**
-     * Первый шаг выгрузки
-     * 1. Получить от пользователя даты суббот и воскресений
-     * 2. Послать файл с датами на сервер Zotonic
-     * 3. Запустить на сервере Zotonic рекомпиляцию бинарных файлов
+     * 
+     * Контроллер для первого шага выгрузки в ФОМС
      * @return type
      */
     public function actionFomsFirstStep() {
@@ -38,52 +36,26 @@ class FomsController extends AppController {
         if ($request->isPost && $request->post('ajax') !== null) {
             $model->load(Yii::$app->request->post());
             Yii::$app->response->format = Response::FORMAT_JSON;
-            $result = ActiveForm::validate($model);            
+            $result = ActiveForm::validate($model);
             return $result;
         }
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
                 Yii::error('Validation errors: ' . print_r($model->getErrors(), true));
+            } else {
+                
+                $model->writeDays($model);
             }
-            else {
-            $appendix = file_get_contents("reestr/foms_appendix_template.hrl");
-            $firstday = date("Y-m-01", strtotime("-20 days"));
-            $lastday = date("Y-m-t", strtotime("-20 days"));
-            $appendix = str_replace("firstday", $firstday, $appendix);
-            $appendix = str_replace("lastday", $lastday, $appendix);
-            $i = 0;
-            $days = "";
-            foreach ($model->saturdays as $day) {
-                $days = $days . "\t\tfutils:parse_date(<<\"$day\">>),\r\n";
-                $i++;
-            }
-            $daysZ = "";
-            $i = 0;
-            foreach ($model->sundays as $day) {
-                if ($i == count($model->sundays) - 1) {
-                    $days = $days . "\t\tfutils:parse_date(<<\"$day\">>)";
-                    $daysZ = $daysZ . "\t\tfutils:parse_date(<<\"$day\">>)";
-                    continue;
-                }
-                $days = $days . "\t\tfutils:parse_date(<<\"$day\">>),\r\n";
-                $daysZ = $daysZ . "\t\tfutils:parse_date(<<\"$day\">>),\r\n";
-                $i++;
-            }
-            $appendix = str_replace("holidayssss", $days, $appendix);
-            $appendix = str_replace("saturdaysss", $daysZ, $appendix);
-            file_put_contents("reestr/foms_appendix.hrl", $appendix);
-            $remote_file = '/usr/home/zotonic/zotonic/user/sites/adisreports/support/foms_appendix.hrl';
-            $local_file = 'reestr/foms_appendix.hrl';
-            $mode = 'FTP_ASCII';
-            $asynchronous = false;
-            $file = Yii::$app->ftp->put($local_file, $remote_file, $mode, $asynchronous);           
-            shell_exec('cd /var/www/egiz; ./yii  syncronization/recompile-zotonic');
-            }
-        }        
+        }
         return $this->render
                         ('foms-first-step', ['model' => $model]);
     }
 
+    /**
+     * Контроллер для второго шага выгрузки
+     * @param type $x
+     * @return type
+     */
     public function actionFomsSecondStep($x = "") {
         if (Yii::$app->request->isPost) {
             try {
@@ -795,8 +767,8 @@ class FomsController extends AppController {
     public static function generateZip() {
         //создаем Zip-архив с файлами реестра HM
         //удалить старый архив
-		@unlink("reestr/HM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.zip");
-		$zip = new \ZipArchive();
+        @unlink("reestr/HM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.zip");
+        $zip = new \ZipArchive();
         $zip_name = "reestr/HM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.zip";
 
         if ($zip->open($zip_name, \ZIPARCHIVE::CREATE) !== TRUE) {
@@ -810,8 +782,8 @@ class FomsController extends AppController {
 
         //создаем Zip-архив с файлами реестра CM
         $zip = new \ZipArchive();
-		//удалить старый архив
-		@unlink("reestr/CM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.zip");
+        //удалить старый архив
+        @unlink("reestr/CM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.zip");
         $zip_name = "reestr/CM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.zip";
 
         if ($zip->open($zip_name, \ZIPARCHIVE::CREATE) !== TRUE) {
