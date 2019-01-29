@@ -540,9 +540,9 @@ class FomsController extends AppController {
             $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
             if ((string) $hm->Z_SL->SUMV === "662.02") {
                 //Временное решение
-                        //Поправить поля по регламенту на 2019 год
-                        unset($hm->Z_SL->SL->USL->CODE_USL);
-                        $hm->Z_SL->IDSP = 25;
+                //Поправить поля по регламенту на 2019 год
+                unset($hm->Z_SL->SL->USL->CODE_USL);
+                $hm->Z_SL->IDSP = 25;
                 $neotl++;
             }
             if ((string) $hm->Z_SL->SUMV === "3725.53") {
@@ -575,9 +575,9 @@ class FomsController extends AppController {
             //генерируем SL_ID
             $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
             //Смешно, но онкологический вызов не может быть неотложным))))
-            /*if ((string) $hm->Z_SL->SUMV === "662.02") {
-                $neotl++;
-            }*/
+            /* if ((string) $hm->Z_SL->SUMV === "662.02") {
+              $neotl++;
+              } */
             if ((string) $hm->Z_SL->SUMV === "3725.53") {
                 $vr++;
             }
