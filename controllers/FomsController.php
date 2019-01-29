@@ -273,6 +273,11 @@ class FomsController extends AppController {
                 if ((string) $hm->Z_SL->SUMV === "662.02") {
                     $temp1++;
                     $hm->Z_SL->SL->USL->DATE_OUT = $hm->Z_SL->SL->USL->DATE_IN;
+                    
+                    //Временное решение
+                    //Поправить поля по регламенту на 2019 год
+                    unset($hm->Z_SL->SL->USL->CODE_USL);
+                    $hm->Z_SL->IDSP = 25;
                     //echo "Дата вызова неотложки поправлена, № карты: " . $hm->Z_SL->SL->NHISTORY . "\r\n";
                 } else {
                     $temp2++;
@@ -393,7 +398,7 @@ class FomsController extends AppController {
                                 if ((string) $hm->Z_SL->SUMV === "3725.53") {
                                     $feld_j++;
                                 };
-                                $hm->Z_SL->IDSP = "40";
+                                $hm->Z_SL->IDSP = "25";
                                 $hm->Z_SL->SUMV = "662.02";
                                 $hm->Z_SL->SL->SUM_M = "662.02";
                                 $hm->Z_SL->SL->addChild('P_CEL', '1.1');
@@ -407,7 +412,7 @@ class FomsController extends AppController {
                                 $hm->Z_SL->SL->USL->addChild('DATE_IN', $hm->Z_SL->SL->DATE_1);
                                 $hm->Z_SL->SL->USL->addChild('DATE_OUT', $hm->Z_SL->SL->DATE_2);
                                 $hm->Z_SL->SL->USL->addChild('DS', $hm->Z_SL->SL->DS1);
-                                $hm->Z_SL->SL->USL->addChild('CODE_USL', '-');
+                                //$hm->Z_SL->SL->USL->addChild('CODE_USL', '-');
                                 $hm->Z_SL->SL->USL->addChild('KOL_USL', '1');
                                 $hm->Z_SL->SL->USL->addChild('TARIF', '662.02');
                                 $hm->Z_SL->SL->USL->addChild('SUMV_USL', '662.02');
