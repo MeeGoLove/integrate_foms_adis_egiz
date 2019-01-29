@@ -541,7 +541,7 @@ class FomsController extends AppController {
             if ((string) $hm->Z_SL->SUMV === "662.02") {
                 //Временное решение
                         //Поправить поля по регламенту на 2019 год
-                        @unset($hm->Z_SL->SL->USL->CODE_USL);
+                        unset($hm->Z_SL->SL->USL->CODE_USL);
                         $hm->Z_SL->IDSP = 25;
                 $neotl++;
             }
