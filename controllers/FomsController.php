@@ -43,7 +43,7 @@ class FomsController extends AppController {
             if (!$model->validate()) {
                 Yii::error('Validation errors: ' . print_r($model->getErrors(), true));
             } else {
-                
+
                 $model->writeDays($model);
             }
         }
@@ -273,11 +273,7 @@ class FomsController extends AppController {
                 if ((string) $hm->Z_SL->SUMV === "662.02") {
                     $temp1++;
                     $hm->Z_SL->SL->USL->DATE_OUT = $hm->Z_SL->SL->USL->DATE_IN;
-                    
-                    //Временное решение
-                    //Поправить поля по регламенту на 2019 год
-                    unset($hm->Z_SL->SL->USL->CODE_USL);
-                    $hm->Z_SL->IDSP = 25;
+
                     //echo "Дата вызова неотложки поправлена, № карты: " . $hm->Z_SL->SL->NHISTORY . "\r\n";
                 } else {
                     $temp2++;
@@ -336,6 +332,11 @@ class FomsController extends AppController {
                     //для неотложки добавляем узел P_CEL со значением 1.1                        
                     //Также для неотложки сверяем время прибытия, оно не должно быть после 19:00
                     if ((string) $hm->Z_SL->SUMV === "662.02") {
+                        //Временное решение
+                        //Поправить поля по регламенту на 2019 год
+                        unset($hm->Z_SL->SL->USL->CODE_USL);
+                        $hm->Z_SL->IDSP = 25;
+                        //Дальше тоже правка полей 
                         $hm->Z_SL->SUMV = "662.02";
                         $hm->Z_SL->SL->SUM_M = "662.02";
                         $hm->Z_SL->SL->addChild('P_CEL', '1.1');
@@ -479,6 +480,11 @@ class FomsController extends AppController {
                 //для неотложки добавляем узел P_CEL со значением 2
                 //
 		if ((string) $hm->Z_SL->SUMV === "662.02") {
+                    //Временное решение
+                    //Поправить поля по регламенту на 2019 год
+                    unset($hm->Z_SL->SL->USL->CODE_USL);
+                    $hm->Z_SL->IDSP = 25;
+                    //Конецвременного решения
                     $hm->Z_SL->SUMV = "662.02";
                     $hm->Z_SL->SL->SUM_M = "662.02";
                     $hm->Z_SL->SL->addChild('P_CEL', '1.1');
@@ -533,6 +539,10 @@ class FomsController extends AppController {
             //генерируем SL_ID
             $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
             if ((string) $hm->Z_SL->SUMV === "662.02") {
+                //Временное решение
+                        //Поправить поля по регламенту на 2019 год
+                        @unset($hm->Z_SL->SL->USL->CODE_USL);
+                        $hm->Z_SL->IDSP = 25;
                 $neotl++;
             }
             if ((string) $hm->Z_SL->SUMV === "3725.53") {
@@ -564,9 +574,10 @@ class FomsController extends AppController {
             $hm_iOnko++;
             //генерируем SL_ID
             $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
-            if ((string) $hm->Z_SL->SUMV === "662.02") {
+            //Смешно, но онкологический вызов не может быть неотложным))))
+            /*if ((string) $hm->Z_SL->SUMV === "662.02") {
                 $neotl++;
-            }
+            }*/
             if ((string) $hm->Z_SL->SUMV === "3725.53") {
                 $vr++;
             }
