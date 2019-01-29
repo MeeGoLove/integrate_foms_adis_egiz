@@ -320,7 +320,7 @@ class FomsController extends AppController {
             //проверяем что вызов не переходит на следующий месяц
             $time_end = strtotime(date("Y-m") . "-01 00:00");
             //Для отладки!!!
-            //$time_end = strtotime("2018-12-01 00:00");
+            $time_end = strtotime("2019-01-30 00:00");
             $time_mission = strtotime((string) $hm->Z_SL->SL->DATE_2 . " " . (string) $hm->Z_SL->SL->COMENTSL->TIME_MISSION);
             //Проверка, что окончание вызова не ушли на следующий месяц
             if (($time_end - $time_mission) > 0) {
