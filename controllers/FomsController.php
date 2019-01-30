@@ -342,7 +342,14 @@ class FomsController extends AppController {
                         $hm->Z_SL->SL->addChild('P_CEL', '1.1');
                         $neotl++; //счетчик неотложных вызовов
 
-                        if (date("H", $time_mission) >= 19) {
+                        if ((date("H", $time_mission) >= 19)
+                                or (
+                                date("H", $time_mission) >= 14
+                                and (
+                                date("d", $time_mission) == 3
+                                or date("d", $time_mission) == 4
+                                or date("d", $time_mission) == 8)
+                                )) {
                             //echo "<p style=\"color:#ff0000\">Неотложка после 19:00, карта " . $hm->Z_SL->SL->NHISTORY . "</p>";
                             unset($hm->Z_SL->SL->USL);
                             unset($hm->Z_SL->SL->COMENTSL->METHOD);
