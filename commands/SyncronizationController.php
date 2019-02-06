@@ -48,29 +48,30 @@ class SyncronizationController extends Controller {
      * Функция рекомпилирует программу выгрузки вызовов
      */
     public function actionRecompileZotonic() {
-        try {SyncronizationController::connect('172.30.25.189', [
-            'username' => 'zotonic',
-            'password' => 'common_server_zotonic', // optional
-        ]);
+        try {
+            SyncronizationController::connect('172.30.25.189', [
+                'username' => 'zotonic',
+                'password' => 'common_server_zotonic', // optional
+            ]);
 
-        // Or via private key
-        /*
-          $this->connect('example.com', [
-          'username' => 'myusername',
-          'key' => '/path/to/private.key',
-          'password' => 'mykeypassword', // optional
-          ]);
-         */
-        $output = SyncronizationController::run(
-                'cd /usr/home/zotonic/zotonic; ./recompile.sh', function($line) {
-            echo $line;
-        });
-        
-        echo "<p>Послана команда рекомпиляции на сервер Zabbix, если что-то пойдет "
-        . "не так, попросите отдел АСУ перезагрузить Zabbix, а пока можете попить чай (5-10 минут)</p>\r\n";
+            // Or via private key
+            /*
+              $this->connect('example.com', [
+              'username' => 'myusername',
+              'key' => '/path/to/private.key',
+              'password' => 'mykeypassword', // optional
+              ]);
+             */
+            $output = SyncronizationController::run(
+                            'cd /usr/home/zotonic/zotonic; ./recompile.sh', function($line) {
+                        echo $line;
+                    });
+
+            echo "<p>Послана команда рекомпиляции на сервер Zabbix, если что-то пойдет "
+            . "не так, попросите отдел АСУ перезагрузить Zabbix, а пока можете попить чай (5-10 минут)</p>\r\n";
         } catch (\Exception $ex) {
             echo "<p>При посылке команды рекомпиляции, что-то совсем пошло "
-            . "не так. Возникла ошибка: <b>".$ex->getMessage()."</b><p>\r\n";
+            . "не так. Возникла ошибка: <b>" . $ex->getMessage() . "</b><p>\r\n";
         }
     }
 
@@ -79,55 +80,60 @@ class SyncronizationController extends Controller {
      * @param type $organisationId Идентификатор организации
      */
     public function actionSyncResource($organisationId = "2052479") {
-        $start = date("H:i:s");
-        $synced = 0;
-        $not_synced = 0;
-        $not_found = 0;
-        $locationsRequest = new getLocations();
-        $locationsRequest->clinic = $organisationId;
-        $locationResponse = \Yii::$app->resources->send($locationsRequest);
+        try {
+            $start = date("H:i:s");
+            $synced = 0;
+            $not_synced = 0;
+            $not_found = 0;
+            $locationsRequest = new getLocations();
+            $locationsRequest->clinic = $organisationId;
+            $locationResponse = \Yii::$app->resources->send($locationsRequest);
 
-        foreach ($locationResponse->location as $location) {
-            $locationRequest = new getLocation();
-            $locationRequest->location = "$location";
-            $locationResponse = \Yii::$app->resources->send($locationRequest);
-            //var_dump($response);
-            $employeePosRequest = new getEmployeePosition();
+            foreach ($locationResponse->location as $location) {
+                $locationRequest = new getLocation();
+                $locationRequest->location = "$location";
+                $locationResponse = \Yii::$app->resources->send($locationRequest);
+                //var_dump($response);
+                $employeePosRequest = new getEmployeePosition();
 
-            if (@gettype($locationResponse->location->employeePositionList->
-                            EmployeePosition->employeePosition) == "string") {
-                $employeePosRequest->id = $locationResponse->location->employeePositionList->
-                        EmployeePosition->employeePosition;
-                $employeePosResponse = \Yii::$app->employees->send($employeePosRequest);
+                if (@gettype($locationResponse->location->employeePositionList->
+                                EmployeePosition->employeePosition) == "string") {
+                    $employeePosRequest->id = $locationResponse->location->employeePositionList->
+                            EmployeePosition->employeePosition;
+                    $employeePosResponse = \Yii::$app->employees->send($employeePosRequest);
 
-                $employee = new getEmployee();
-                $employee->id = $employeePosResponse->employeePosition->employee;
-                $employeeResponse = \Yii::$app->employees->send($employee);
-                $tabnumber = $employeeResponse->employee->number;
-                $syncedEmployees = Sync1cEgisAdis::findAll(['tab1c' => $tabnumber]);
-                if (!empty($syncedEmployees)) {
-                    if (@gettype($syncedEmployees) == "array") {
-                        foreach ($syncedEmployees as $syncedEmployee) {
-                            $syncedEmployee->egis_id = $location;
-                            $syncedEmployee->egis_sync_date = date("Y-m-d H:i:s");
-                            $syncedEmployee->update();
+                    $employee = new getEmployee();
+                    $employee->id = $employeePosResponse->employeePosition->employee;
+                    $employeeResponse = \Yii::$app->employees->send($employee);
+                    $tabnumber = $employeeResponse->employee->number;
+                    $syncedEmployees = Sync1cEgisAdis::findAll(['tab1c' => $tabnumber]);
+                    if (!empty($syncedEmployees)) {
+                        if (@gettype($syncedEmployees) == "array") {
+                            foreach ($syncedEmployees as $syncedEmployee) {
+                                $syncedEmployee->egis_id = $location;
+                                $syncedEmployee->egis_sync_date = date("Y-m-d H:i:s");
+                                $syncedEmployee->update();
+                            }
+                        } else {
+                            $syncedEmployees->egis_id = $location;
+                            $syncedEmployees->egis_sync_date = date("Y-m-d H:i:s");
+                            $syncedEmployees->update();
                         }
+                        $synced++;
                     } else {
-                        $syncedEmployees->egis_id = $location;
-                        $syncedEmployees->egis_sync_date = date("Y-m-d H:i:s");
-                        $syncedEmployees->update();
+                        $not_synced++;
                     }
-                    $synced++;
-                } else {
-                    $not_synced++;
-                }
-            } else
-                $not_found++;
+                } else
+                    $not_found++;
+            }
+            $end = date("H:i:s");
+            \Yii::info("Синхронизированно $synced ресурсов, не найдено $not_synced"
+                    . " ресурсов!, не найдено $not_found позиций\r\n "
+                    . "Время старта $start, время окончания $end\r\n", 'egis_pass');
+        } catch (\Exception $ex) {
+            \Yii::info("При попытке выполнения задачи cинхронизации ресурсов"
+                    . " возникла ошибка<br>Текст ошибки: " . $ex->getMessage(), 'egis_pass');
         }
-        $end = date("H:i:s");
-        \Yii::info("Синхронизированно $synced ресурсов, не найдено $not_synced"
-                . " ресурсов!, не найдено $not_found позиций\r\n "
-                . "Время старта $start, время окончания $end\r\n", 'egis_pass');
         return 0;
     }
 
@@ -138,52 +144,57 @@ class SyncronizationController extends Controller {
      * @return int
      */
     public function actionCreateMedics() {
-        \Yii::info("Запущена задача создания медиков для которых нет ресурсов", 'egis_pass');
-        $medicsToEgiz = Sync1cEgisAdis::findBySql("select * from sync_1c_egis_adis "
-                        . "where (job like '%врач%' or job like '%фельдшер%') and "
-                        . "dismissal is NULL and egis_id is NULL "
-                        . "and employment is not null")->asArray()->all();
-        foreach ($medicsToEgiz as $medic) {
-            $surname = $medic["surname"];
-            $name = $medic["name"];
-            $patrname = $medic["patrname"];
-            $birthday = $medic["birthday"];
-            $snils = $medic["snils"];
-            $tab1c = $medic["tab1c"];
-            $fromDate = $medic["employment"];
-            $idMedic = SyncronizationController::FindIndividual($surname, $name, $patrname, $birthday, $snils);
-            if (@gettype($idMedic) != "array") {
-                if ($idMedic != "notFound") {
-                    /*
-                      6781 - Врач скорой медицинской помощи
-                      6443 - Фельдшер скорой медицинской помощи
-                     */
-                    $position = 6781;
-                    if ($medic["codeadis"] >= 2000)
-                        $position = 6443;
-                    $positionId = SyncronizationController::CreateEmployeeAndPosition($idMedic, $tab1c, $position, $fromDate);
-                    if (($positionId != "Позиция не создана!") && ($positionId != "Сотрудник не создан!")) {
-                        $location = SyncronizationController::CreateResource($positionId);
-                        if ($location == "Ресурс не создан!")
-                            \Yii::info("Для сотрудника с таб. номером $tab1c"
-                                    . " $location", 'egis_pass');
-                        else {
-                            \Yii::info("Для сотрудника с таб. номером $tab1c "
-                                    . "создана должность $positionId и ресурс"
-                                    . " $location ", 'egis_pass');
-                            $syncedEmployee = Sync1cEgisAdis::findOne($tab1c);
-                            $syncedEmployee->egis_id = $location;
-                            $syncedEmployee->egis_sync_date = date("Y-m-d H:i:s");
-                            $syncedEmployee->update();
-                        }
+        try {
+            \Yii::info("Запущена задача создания медиков для которых нет ресурсов", 'egis_pass');
+            $medicsToEgiz = Sync1cEgisAdis::findBySql("select * from sync_1c_egis_adis "
+                            . "where (job like '%врач%' or job like '%фельдшер%') and "
+                            . "dismissal is NULL and egis_id is NULL "
+                            . "and employment is not null")->asArray()->all();
+            foreach ($medicsToEgiz as $medic) {
+                $surname = $medic["surname"];
+                $name = $medic["name"];
+                $patrname = $medic["patrname"];
+                $birthday = $medic["birthday"];
+                $snils = $medic["snils"];
+                $tab1c = $medic["tab1c"];
+                $fromDate = $medic["employment"];
+                $idMedic = SyncronizationController::FindIndividual($surname, $name, $patrname, $birthday, $snils);
+                if (@gettype($idMedic) != "array") {
+                    if ($idMedic != "notFound") {
+                        /*
+                          6781 - Врач скорой медицинской помощи
+                          6443 - Фельдшер скорой медицинской помощи
+                         */
+                        $position = 6781;
+                        if ($medic["codeadis"] >= 2000)
+                            $position = 6443;
+                        $positionId = SyncronizationController::CreateEmployeeAndPosition($idMedic, $tab1c, $position, $fromDate);
+                        if (($positionId != "Позиция не создана!") && ($positionId != "Сотрудник не создан!")) {
+                            $location = SyncronizationController::CreateResource($positionId);
+                            if ($location == "Ресурс не создан!")
+                                \Yii::info("Для сотрудника с таб. номером $tab1c"
+                                        . " $location", 'egis_pass');
+                            else {
+                                \Yii::info("Для сотрудника с таб. номером $tab1c "
+                                        . "создана должность $positionId и ресурс"
+                                        . " $location ", 'egis_pass');
+                                $syncedEmployee = Sync1cEgisAdis::findOne($tab1c);
+                                $syncedEmployee->egis_id = $location;
+                                $syncedEmployee->egis_sync_date = date("Y-m-d H:i:s");
+                                $syncedEmployee->update();
+                            }
+                        } else
+                            \Yii::info("$positionId $tab1c", 'egis_pass');
                     } else
-                        \Yii::info("$positionId $tab1c", 'egis_pass');
+                        \Yii::info("Для сотрудника с таб. номером $tab1c не найдено "
+                                . "физ. лица, создайте его ручками", 'egis_pass');
                 } else
-                    \Yii::info("Для сотрудника с таб. номером $tab1c не найдено "
-                            . "физ. лица, создайте его ручками", 'egis_pass');
-            } else
-                \Yii::info("Для сотрудника с таб. номером $tab1c "
-                        . "найдено более одного физического лица! Выберите его ручками", 'egis_pass');
+                    \Yii::info("Для сотрудника с таб. номером $tab1c "
+                            . "найдено более одного физического лица! Выберите его ручками", 'egis_pass');
+            }
+        } catch (\Exception $ex) {
+            \Yii::info("При попытке выполнения задачи создания медиков, "
+                    . "для которых нет ресурсов возникла ошибка<br>Текст ошибки: " . $ex->getMessage(), 'egis_pass');
         }
         return 0;
     }
@@ -300,73 +311,78 @@ class SyncronizationController extends Controller {
      * @return int
      */
     public function actionUpdateFromAdisAnd1C() {
-        $cmpstaff = Cmpstaff::findBySql("select * from cmpstaff "
-                                . "where code<>'0000' and name not like '%не исп%';")
-                        ->asArray()->all();
+        try {
+            $cmpstaff = Cmpstaff::findBySql("select * from cmpstaff "
+                                    . "where code<>'0000' and name not like '%не исп%';")
+                            ->asArray()->all();
 
-        //обошли в цикле всех сотрудников из справочника кадровая база
-        foreach ($cmpstaff as $rab) {
-            //в справочнике кадровая база
-            //поле инфо должно быть из 12 символов
-            //поле имя не должно содержать слова "НЕ ИСПОЛЬЗОВАТЬ"
-            //поле имя не должно быть из цифр
-            if (mb_strlen($rab["info"]) == 12 and ! ((mb_strpos($rab["name"], 'НЕ ИС')
-                    or preg_match_all('/\d/', $rab["name"])))) {
-                //табельный номер 1С в адисе это последние 4 цифры поля инфо
-                $tab1c = substr($rab["info"], 8);
+            //обошли в цикле всех сотрудников из справочника кадровая база
+            foreach ($cmpstaff as $rab) {
+                //в справочнике кадровая база
+                //поле инфо должно быть из 12 символов
+                //поле имя не должно содержать слова "НЕ ИСПОЛЬЗОВАТЬ"
+                //поле имя не должно быть из цифр
+                if (mb_strlen($rab["info"]) == 12 and ! ((mb_strpos($rab["name"], 'НЕ ИС')
+                        or preg_match_all('/\d/', $rab["name"])))) {
+                    //табельный номер 1С в адисе это последние 4 цифры поля инфо
+                    $tab1c = substr($rab["info"], 8);
 
-                $medic = Temp1c::findAll(['tabnum' => $tab1c]);
-                if (count($medic) != 0) {
-                    $syncmedic = new Sync1cEgisAdis();
-                    foreach ($medic as $job) {
-                        $syncmedic->tab1c = $job->tabnum;
-                        $syncmedic->surname = strtok($job->fullname, " ");
-                        $syncmedic->name = strtok(" ");
-                        $syncmedic->patrname = strtok(" ");
-                        $syncmedic->snils = $job->snils;
-                        $syncmedic->job = $job->job;
-                        $syncmedic->birthday = SyncronizationController::ConvertBirthday1C($job->dr);
-                        $syncmedic->codeadis = $rab["code"];
-                        $syncmedic->nameadis = $rab["name"];
-                        $syncmedic->dradis = SyncronizationController::ConvertBirthdayAdis(substr($rab["info"], 0, 8));
-                        $syncmedic->tab1cadis = $tab1c;
-                        $syncmedic->adis_to_1c_syncdate = date("Y-m-d H:i:s");
-                        $syncmedic->pol = $job->pol;
-                        $temp = strtok($job->reg, " ");
-                        preg_match_all('/(\d+\.\d+\.\d+)/', $job->reg, $res);
-                        switch ($temp) {
-                            case "Прием":
-                                $tempDay = strtotime(SyncronizationController::ConvertBirthday1C($res[0][0]));
-                                if ($syncmedic->employment == "")
-                                    $tempDay2 = strtotime(date("Y-m-d"));
-                                else
-                                    $tempDay2 = strtotime($syncmedic->employment);
-                                if ($tempDay2 >= $tempDay) {
-                                    $syncmedic->employment = SyncronizationController::ConvertBirthday1C($res[0][0]);
-                                }
-                                break;
-                            case "Кадровое":
-                                $tempDay = strtotime(SyncronizationController::ConvertBirthday1C($res[0][0]));
-                                if ($syncmedic->employment == "")
-                                    $tempDay2 = strtotime(date("Y-m-d"));
-                                else
-                                    $tempDay2 = strtotime($syncmedic->employment);
-                                if ($tempDay2 >= $tempDay) {
-                                    $syncmedic->employment = SyncronizationController::ConvertBirthday1C($res[0][0]);
-                                }
-                                break;
-                            case "Увольнение":
-                                $syncmedic->dismissal = SyncronizationController::ConvertBirthday1C($res[0][0]);
-                                break;
+                    $medic = Temp1c::findAll(['tabnum' => $tab1c]);
+                    if (count($medic) != 0) {
+                        $syncmedic = new Sync1cEgisAdis();
+                        foreach ($medic as $job) {
+                            $syncmedic->tab1c = $job->tabnum;
+                            $syncmedic->surname = strtok($job->fullname, " ");
+                            $syncmedic->name = strtok(" ");
+                            $syncmedic->patrname = strtok(" ");
+                            $syncmedic->snils = $job->snils;
+                            $syncmedic->job = $job->job;
+                            $syncmedic->birthday = SyncronizationController::ConvertBirthday1C($job->dr);
+                            $syncmedic->codeadis = $rab["code"];
+                            $syncmedic->nameadis = $rab["name"];
+                            $syncmedic->dradis = SyncronizationController::ConvertBirthdayAdis(substr($rab["info"], 0, 8));
+                            $syncmedic->tab1cadis = $tab1c;
+                            $syncmedic->adis_to_1c_syncdate = date("Y-m-d H:i:s");
+                            $syncmedic->pol = $job->pol;
+                            $temp = strtok($job->reg, " ");
+                            preg_match_all('/(\d+\.\d+\.\d+)/', $job->reg, $res);
+                            switch ($temp) {
+                                case "Прием":
+                                    $tempDay = strtotime(SyncronizationController::ConvertBirthday1C($res[0][0]));
+                                    if ($syncmedic->employment == "")
+                                        $tempDay2 = strtotime(date("Y-m-d"));
+                                    else
+                                        $tempDay2 = strtotime($syncmedic->employment);
+                                    if ($tempDay2 >= $tempDay) {
+                                        $syncmedic->employment = SyncronizationController::ConvertBirthday1C($res[0][0]);
+                                    }
+                                    break;
+                                case "Кадровое":
+                                    $tempDay = strtotime(SyncronizationController::ConvertBirthday1C($res[0][0]));
+                                    if ($syncmedic->employment == "")
+                                        $tempDay2 = strtotime(date("Y-m-d"));
+                                    else
+                                        $tempDay2 = strtotime($syncmedic->employment);
+                                    if ($tempDay2 >= $tempDay) {
+                                        $syncmedic->employment = SyncronizationController::ConvertBirthday1C($res[0][0]);
+                                    }
+                                    break;
+                                case "Увольнение":
+                                    $syncmedic->dismissal = SyncronizationController::ConvertBirthday1C($res[0][0]);
+                                    break;
+                            }
                         }
-                    }
-                    $syncmedic->save();
-                } else {
-                    if ($rab["code"] <= 3000) {
-                        \Yii::info("Для сотрудника табельный 1с: $tab1c, табельный АДИС:" . $rab["code"] . " не найдена запись в 1С", 'egis_pass');
+                        $syncmedic->save();
+                    } else {
+                        if ($rab["code"] <= 3000) {
+                            \Yii::info("Для сотрудника табельный 1с: $tab1c, табельный АДИС:" . $rab["code"] . " не найдена запись в 1С", 'egis_pass');
+                        }
                     }
                 }
             }
+        } catch (\Exception $ex) {
+            \Yii::info("При попытке выполнения задачи cинхронизации данных АДИС и 1С"
+                    . " возникла ошибка<br>Текст ошибки: " . $ex->getMessage(), 'egis_pass');
         }
         return 0;
     }
@@ -422,94 +438,98 @@ class SyncronizationController extends Controller {
                 $end, 'egis_pass');
         \Yii::info("Время запуска задачи " .
                 date("H:i:s", time() + 5 * 3600), 'egis_pass');
-        $calls = ArchiveCalls::findBySql("SELECT ngod, tprm, fam, imya, "
-                        . "otch, pol, rezl, tabn, medc_str, mest, ds1, spol, "
-                        . "kod1, inf4, "
-                        . " inf2, inf5 FROM archive_calls WHERE "
-                        . "dprm>=\"$start\" and dprm<=\"$end\""
-                        . ";")->asArray()->all();
-        $countSended = 0;
-        foreach ($calls as $call) {
-            $trCallResp = new SendDataTransferCall();
-            $trCallResp->ext_system_code = 9999;
-            $trCallResp->call = new call();
-            $trCallResp->call->global_call_number = $call["ngod"];
-            $trCallResp->call->call_time = $call["tprm"] . "+05:00";
-            $trCallResp->call->diagnosis = $call["ds1"];
-            $trCallResp->call->place = $call["mest"];
-            $trCallResp->call->result = $call["rezl"];
-            $trCallResp->brigade = new brigade();
-            $trCallResp->brigade->senior_personnel = new senior_personnel();
-            $trCallResp->brigade->senior_personnel->code = $call["tabn"];
-            $trCallResp->medical_supplies[] = new medical_supplies();
-            $meds = SyncronizationController::parseMeds($call["medc_str"]);
-            $medicSupplies = [];
-            foreach ($meds as $med) {
-                $medicSup = new medical_supplies();
-                $medicSup->code = $med;
-                $medicSupplies[] = $medicSup;
-            }
-            $trCallResp->medical_supplies = $medicSupplies;
-            //var_dump($trCallResp->medical_supplies);
-            $trCallResp->call->patient = new patient();
-            $trCallResp->call->patient->surname = $call["fam"];
-            $trCallResp->call->patient->name = $call["imya"];
-            $trCallResp->call->patient->patronymic = $call["otch"];
-            $trCallResp->call->patient->gender = $call["pol"];
-            $trCallResp->call->patient->insurance = $call["spol"];
-            $trCallResp->call->patient->snils = $call["inf4"];
-            $trCallResp->call->patient->document_type = $call["inf2"];
-            $trCallResp->call->patient->document_number = $call["inf5"];
-            if ($call["kod1"] != "") {
-                $day = $call["kod1"][0] . $call["kod1"][1];
-                $mounth = $call["kod1"][3] . $call["kod1"][4];
-                $year = $call["kod1"][6] . $call["kod1"][7] . $call["kod1"][8] . $call["kod1"][9];
-                $trCallResp->call->patient->birthday = $year . "-" . $mounth . "-" . $day;
-            }
-            try {
+        try {
+            $calls = ArchiveCalls::findBySql("SELECT ngod, tprm, fam, imya, "
+                            . "otch, pol, rezl, tabn, medc_str, mest, ds1, spol, "
+                            . "kod1, inf4, "
+                            . " inf2, inf5 FROM archive_calls WHERE "
+                            . "dprm>=\"$start\" and dprm<=\"$end\""
+                            . ";")->asArray()->all();
+            $countSended = 0;
+            foreach ($calls as $call) {
+                $trCallResp = new SendDataTransferCall();
+                $trCallResp->ext_system_code = 9999;
+                $trCallResp->call = new call();
+                $trCallResp->call->global_call_number = $call["ngod"];
+                $trCallResp->call->call_time = $call["tprm"] . "+05:00";
+                $trCallResp->call->diagnosis = $call["ds1"];
+                $trCallResp->call->place = $call["mest"];
+                $trCallResp->call->result = $call["rezl"];
+                $trCallResp->brigade = new brigade();
+                $trCallResp->brigade->senior_personnel = new senior_personnel();
+                $trCallResp->brigade->senior_personnel->code = $call["tabn"];
+                $trCallResp->medical_supplies[] = new medical_supplies();
+                $meds = SyncronizationController::parseMeds($call["medc_str"]);
+                $medicSupplies = [];
+                foreach ($meds as $med) {
+                    $medicSup = new medical_supplies();
+                    $medicSup->code = $med;
+                    $medicSupplies[] = $medicSup;
+                }
+                $trCallResp->medical_supplies = $medicSupplies;
+                //var_dump($trCallResp->medical_supplies);
+                $trCallResp->call->patient = new patient();
+                $trCallResp->call->patient->surname = $call["fam"];
+                $trCallResp->call->patient->name = $call["imya"];
+                $trCallResp->call->patient->patronymic = $call["otch"];
+                $trCallResp->call->patient->gender = $call["pol"];
+                $trCallResp->call->patient->insurance = $call["spol"];
+                $trCallResp->call->patient->snils = $call["inf4"];
+                $trCallResp->call->patient->document_type = $call["inf2"];
+                $trCallResp->call->patient->document_number = $call["inf5"];
+                if ($call["kod1"] != "") {
+                    $day = $call["kod1"][0] . $call["kod1"][1];
+                    $mounth = $call["kod1"][3] . $call["kod1"][4];
+                    $year = $call["kod1"][6] . $call["kod1"][7] . $call["kod1"][8] . $call["kod1"][9];
+                    $trCallResp->call->patient->birthday = $year . "-" . $mounth . "-" . $day;
+                }
+                try {
 
-                $trCallReq = \Yii::$app->adis->send($trCallResp);
+                    $trCallReq = \Yii::$app->adis->send($trCallResp);
+                    //$trCallReq = \app\controllers\EgisExportController::loadCalls($trCallResp);
+                } catch (\Exception $ex) {
+                    if ($ex->getMessage() == "Error Fetching http headers") {
+
+                        sleep(60);
+                        try {
+                            $trCallReq = \Yii::$app->adis->send($trCallResp);
+                            //$trCallReq = \app\controllers\EgisExportController::loadCalls($trCallResp);
+                        } catch (\Exception $ex1) {
+                            if ($ex1->getMessage() == "Error Fetching http headers")
+                                \Yii::info("Вызов " . $call["ngod"] . ", дата " . $call["tprm"] . " не удалось послать, "
+                                        . "возможно из-за проблем на сервере ЕГИЗ", 'egis_pass');
+                            else
+                                \Yii::info("Вызов " . $call["ngod"] . ", дата " . $call["tprm"] . " не удалось послать, "
+                                        . "по неведомым причинам, вот текст"
+                                        . " исключения в помощь:" . $ex1->getMessage(), 'egis_pass');
+                        }
+                    } else
+                        \Yii::info("Вызов " . $call["ngod"] . ", дата " . $call["tprm"] . " не удалось послать, "
+                                . "по неведомым причинам, вот текст"
+                                . " исключения в помощь:" . $ex->getMessage(), 'egis_pass');
+                }
+
                 //$trCallReq = \app\controllers\EgisExportController::loadCalls($trCallResp);
-            } catch (\Exception $ex) {
-                if ($ex->getMessage() == "Error Fetching http headers") {
-
-                    sleep(60);
-                    try {
-                        $trCallReq = \Yii::$app->adis->send($trCallResp);
-                        //$trCallReq = \app\controllers\EgisExportController::loadCalls($trCallResp);
-                    } catch (\Exception $ex1) {
-                        if ($ex1->getMessage() == "Error Fetching http headers")
-                            \Yii::info("Вызов " . $call["ngod"] . ", дата " . $call["tprm"] . " не удалось послать, "
-                                    . "возможно из-за проблем на сервере ЕГИЗ", 'egis_pass');
-                        else
-                            \Yii::info("Вызов " . $call["ngod"] . ", дата " . $call["tprm"] . " не удалось послать, "
-                                    . "по неведомым причинам, вот текст"
-                                    . " исключения в помощь:" . $ex1->getMessage(), 'egis_pass');
-                    }
-                } else
-                    \Yii::info("Вызов " . $call["ngod"] . ", дата " . $call["tprm"] . " не удалось послать, "
-                            . "по неведомым причинам, вот текст"
-                            . " исключения в помощь:" . $ex->getMessage(), 'egis_pass');
+                //sleep(1);
+                $countSended++;
+                $name = $this->ansiFormat("$countSended из " . count($calls), BaseConsole::FG_GREEN);
+                echo "Отправлен вызов " . $trCallResp->call->global_call_number . "               "
+                . "$name\r\n";
             }
 
-            //$trCallReq = \app\controllers\EgisExportController::loadCalls($trCallResp);
-            //sleep(1);
-            $countSended++;
-            $name = $this->ansiFormat("$countSended из " . count($calls), BaseConsole::FG_GREEN);
-            echo "Отправлен вызов " . $trCallResp->call->global_call_number . "               "
-            . "$name\r\n";
+            $savedRecords = SavedCalls::findBySql("select count(*) as saved from savedCalls "
+                            . "where dprm>=\"$start\" and dprm<=\"$end\" and isFromAdis=0")->asArray()->all();
+            $count = $savedRecords[0]["saved"];
+            \Yii::info("Отправлено " . count($calls) . " записей"
+                    , 'egis_pass');
+            \Yii::info("Сохранено в ЕГИСЗ " . $count . " записей"
+                    , 'egis_pass');
+            \Yii::info("Время завершения задачи " .
+                    date("H:i:s", time() + 5 * 3600), 'egis_pass');
+        } catch (\Exception $ex) {
+            \Yii::info("При попытке выполнения задачи ручной выгрузки вызовов в ЕГИСЗ "
+                    . " возникла ошибка<br>Текст ошибки: " . $ex->getMessage(), 'egis_pass');
         }
-
-        $savedRecords = SavedCalls::findBySql("select count(*) as saved from savedCalls "
-                        . "where dprm>=\"$start\" and dprm<=\"$end\" and isFromAdis=0")->asArray()->all();
-        $count = $savedRecords[0]["saved"];
-        \Yii::info("Отправлено " . count($calls) . " записей"
-                , 'egis_pass');
-        \Yii::info("Сохранено в ЕГИСЗ " . $count . " записей"
-                , 'egis_pass');
-        \Yii::info("Время завершения задачи " .
-                date("H:i:s", time() + 5 * 3600), 'egis_pass');
-
         return 0;
     }
 
