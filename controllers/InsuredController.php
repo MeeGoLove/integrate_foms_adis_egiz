@@ -243,7 +243,7 @@ class InsuredController extends AppController {
                     }
                     catch (\Exception $ex)
                     {
-                        @unset($docsEgiz);
+                        unset($docsEgiz);
                         $x = $x ."<p>При поиске в ЕГИСЗ пациента № ".($i-9)." возникла подлая ошибка ;-( </p>";
                     }
                     //Если найдено в ЕГИЗ, заполняем паспортные данные из ЕГИЗ
