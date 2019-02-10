@@ -239,11 +239,11 @@ class InsuredController extends AppController {
                     $egizReq->patrName = $otch;
                     $egizReq->birthDate = $dr;
                     try {
-                    $docsEgiz = InsuredController::returnDocs($egizReq);
+                    //$docsEgiz = InsuredController::returnDocs($egizReq);
                     }
                     catch (\Exception $ex)
                     {
-                        unset($docsEgiz);
+                        //unset($docsEgiz);
                         $x = $x ."<p>При поиске в ЕГИСЗ пациента № ".($i-9)." возникла подлая ошибка ;-( </p>";
                     }
                     //Если найдено в ЕГИЗ, заполняем паспортные данные из ЕГИЗ
