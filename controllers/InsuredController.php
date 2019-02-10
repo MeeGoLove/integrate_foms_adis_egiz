@@ -238,7 +238,14 @@ class InsuredController extends AppController {
                     $egizReq->name = $imya;
                     $egizReq->patrName = $otch;
                     $egizReq->birthDate = $dr;
+                    try {
                     $docsEgiz = InsuredController::returnDocs($egizReq);
+                    }
+                    catch (\Exception $ex)
+                    {
+                        @unset($docsEgiz);
+                        $x = $x ."<p>При поиске в ЕГИСЗ пациента № ".($i-9)." возникла подлая ошибка ;-( </p>";
+                    }
                     //Если найдено в ЕГИЗ, заполняем паспортные данные из ЕГИЗ
                     if (@gettype($docsEgiz) != "NULL") {
                         //9.1 Самое простое СНИЛС
