@@ -122,7 +122,7 @@ class InsuredXls extends Model {
                 $i++;
                 $start++;
                 
-                if ($checkBreak == "stop") {
+                if ($checkBreak == "end") {
                     $needBreak = true;
                 }
             }
