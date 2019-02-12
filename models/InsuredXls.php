@@ -51,7 +51,7 @@ class InsuredXls extends Model {
      * @return boolean Результат генерации файлов
      */
     public static function reportInsured() {
-        try {
+        /*try {*/
 //открытие исходного файла
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xls");
             $notInsuredXLS = $reader->load("uploads/insured.xls");
@@ -132,9 +132,9 @@ class InsuredXls extends Model {
             $writerHelpDesk = new \PhpOffice\PhpSpreadsheet\Writer\Xls($helpDeskXLS);
             $writerHelpDesk->save("uploads/незастрахованные стол справок.xls");
             return true;
-        } catch (\Exception $ex) {
+        /*} catch (\Exception $ex) {
             return false;
-        }
+        }*/
     }
 
 }
