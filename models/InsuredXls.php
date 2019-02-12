@@ -115,7 +115,7 @@ class InsuredXls extends Model {
                 $dprmMySql = date('Y-m-d', strtotime($dprm));
 
 //Нашли суточный номер вызова и номер п/с по годовому номеру и преобразованной дате 
-                $call = ArchiveCalls::findOne(['ngod' => $ngod, 'dprm' => $dprmMySql]);
+                $call = ArchiveCalls::find(['ngod' => $ngod, 'dprm' => $dprmMySql])->limit (1)->one();
                 $statXLS->getActiveSheet()->getCell("G" . ($i - 1))->setValueExplicit($call->numv, 's');
                 $statXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');
 
