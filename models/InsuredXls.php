@@ -89,7 +89,7 @@ class InsuredXls extends Model {
                 $extr = $notInsuredXLS->getActiveSheet()->getCell("J" . $start)->getCalculatedValue();
                 $rezl = $notInsuredXLS->getActiveSheet()->getCell("K" . $start)->getValue();
                 $ngod = $notInsuredXLS->getActiveSheet()->getCell("Z" . $start)->getValue();
-                $checkBreak = $notInsuredXLS->getActiveSheet()->getCell("AK" . $start)->getValue();
+                $checkBreak = $notInsuredXLS->getActiveSheet()->getCell("AB" . $start)->getValue();
 
 //Записать сведения в строку Excel файла для статиста
                 $statXLS->getActiveSheet()->getCell("A" . $i)->setValue($i - 2);
