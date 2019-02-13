@@ -58,7 +58,7 @@ class ExpertParser extends Model {
     public function attributeLabels() {
         parent::attributeLabels();
         return [
-            'xlsFile' => 'Файл Excel под названием остаток',
+            'xlsFile' => 'Файл Excel с годовыми номерами карт',
             'start' => 'Дата начала экспертизы',
             'end' => 'Дата окончания экспертизы'];
     }
