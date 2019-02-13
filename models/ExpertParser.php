@@ -38,14 +38,15 @@ class ExpertParser extends Model {
      */
     public $end;
 
- /*  public function rules() {
-        parent::rules();
-        return [
-            /*[['start'], 'required'],
-            [['end'], 'required'],
-        ];
-    }
-*/
+    /*  public function rules() {
+      parent::rules();
+      return [
+      /*[['start'], 'required'],
+      [['end'], 'required'],
+      ];
+      }
+     */
+
     public function upload() {
         if ($this->validate()) {
             $this->xlsFile->saveAs('uploads/expertise.xls');
@@ -68,25 +69,27 @@ class ExpertParser extends Model {
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xls");
         $expertise = $reader->load("uploads/expertise.xls");
         //Установить активным первый лист Excel - документов
-        $expertise->setActiveSheetIndex(0);        
-        $i = 1 ;
+        $expertise->setActiveSheetIndex(0);
+        $i = 1;
         //Обойти все строки файла, условие выхода пустая строка
-        while (true)
-        {
-            if (@gettype($expertise->getActiveSheet()->getCell("A" . $i)->getValue()) == null)
-            {
+        while (true) {
+            if (@gettype($expertise->getActiveSheet()->getCell("A" . $i)->getValue()) == null) {
                 break;
             }
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
-            $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start, 
-                    'dprm<=' => $end])->limit (1)->one();
-            $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit(var_dump($res), 's');
+            $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start,
+                        'dprm<=' => $end])->limit(1)->one();
+            if (@gettype($res->numv) != "NULL") {
+                $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($res->numv, 's');
+                $expertise->getActiveSheet()->getCell("C" . $i)->setValueExplicit($res->stbr, 's');
+                $expertise->getActiveSheet()->getCell("D" . $i)->setValueExplicit($res->dprm, 's');
+            }
             $i++;
         }
         //Сохранить документ
         $writerExpertise = new \PhpOffice\PhpSpreadsheet\Writer\Xls($expertise);
         $writerExpertise->save("uploads/Готово.xls");
-        
+
         return true;
     }
 
