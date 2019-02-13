@@ -3,7 +3,6 @@
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use unclead\multipleinput\MultipleInput;
-use yii\widgets\Pjax;
 //use kartik\date\DatePicker;
 $this->title = 'Экспертиза';
 ?>
@@ -12,13 +11,8 @@ $this->title = 'Экспертиза';
 <h3>Экспертиза</h3>
 <p></p>
 <?php
-$form = ActiveForm::begin([
-            'enableAjaxValidation' => true,
-            'enableClientValidation' => true,
-            'validateOnChange' => false,
-            'validateOnSubmit' => true,
-            'validateOnBlur' => false,
-        ]);
+$form = ActiveForm::begin(            
+        );
 ?>
 
 
