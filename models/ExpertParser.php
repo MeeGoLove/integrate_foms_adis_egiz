@@ -41,8 +41,8 @@ class ExpertParser extends Model {
     public function rules() {
         parent::rules();
         return [
-            /*[['start'], 'required'],
-            [['end'], 'required'],*/
+            [['start'], 'required'],
+            [['end'], 'required'],
         ];
     }
 
@@ -80,7 +80,7 @@ class ExpertParser extends Model {
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
             $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start, 
                     'dprm<=' => $end])->limit (1)->one();
-            $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit(count($res), 's');
+            $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit(var_dump($res), 's');
             $i++;
         }
         //Сохранить документ
