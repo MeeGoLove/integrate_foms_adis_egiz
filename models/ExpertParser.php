@@ -76,14 +76,14 @@ class ExpertParser extends Model {
                 break;
             }
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
-            /* $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start,
+             $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start,
               'dprm<=' => $end])->limit(1)->one();
               if (@gettype($res->numv) != "NULL") {
               $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($res->numv, 's');
               $expertise->getActiveSheet()->getCell("C" . $i)->setValueExplicit($res->stbr, 's');
               $expertise->getActiveSheet()->getCell("D" . $i)->setValueExplicit($res->dprm, 's');
-              } */
-            $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($i . " " . $start, 's');
+              } 
+            //$expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($i . " " . $start, 's');
             $i++;
         }
         //Сохранить документ
