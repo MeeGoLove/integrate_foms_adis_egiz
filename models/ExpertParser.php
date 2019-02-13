@@ -73,17 +73,18 @@ class ExpertParser extends Model {
         $i = 1;
         //Обойти все строки файла, условие выхода пустая строка
         while (true) {
-            if (@gettype($expertise->getActiveSheet()->getCell("A" . $i)->getValue()) == null) {
+            if (@gettype($expertise->getActiveSheet()->getCell("A" . $i)->getValue()) == null or $i == 1000) {
                 break;
             }
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
-            $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start,
+            /*$res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start,
                         'dprm<=' => $end])->limit(1)->one();
             if (@gettype($res->numv) != "NULL") {
                 $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($res->numv, 's');
                 $expertise->getActiveSheet()->getCell("C" . $i)->setValueExplicit($res->stbr, 's');
                 $expertise->getActiveSheet()->getCell("D" . $i)->setValueExplicit($res->dprm, 's');
-            }
+            }*/
+            $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($i." ".$start, 's');
             $i++;
         }
         //Сохранить документ
