@@ -73,7 +73,7 @@ class ExpertParser extends Model {
         $i = 1;
         //Обойти все строки файла, условие выхода пустая строка
         while (true) {
-            if (@gettype($expertise->getActiveSheet()->getCell("A" . $i)->getValue()) == null or $i == 1000) {
+            if (@gettype($expertise->getActiveSheet()->getCell("A" . $i)->getValue()) == "NULL" or $i == 1000) {
                 break;
             }
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
