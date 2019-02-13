@@ -849,7 +849,7 @@ class FomsController extends AppController {
         if (Yii::$app->request->isPost) {
             $model->xlsFile = UploadedFile::getInstance($model, 'xlsFile');
             if ($model->upload()) {
-                if ($model->parseNumbersOfCalls()) {
+                if ($model->parseNumbersOfCalls($model->start, $model->end)) {
                     return $this->render('expertise', ['model' => $model]);
                 }
                 return $this->render('expertise', ['model' => $model]);
