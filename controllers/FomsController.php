@@ -11,6 +11,7 @@ use yii;
 use app\controllers\AppController;
 use app\models\Weekdays;
 use app\models\Dbf;
+use app\models\ExpertParser;
 use yii\web\UploadedFile;
 use app\models\Neotlojka;
 use app\models\ArchiveCalls;
@@ -110,6 +111,11 @@ class FomsController extends AppController {
         return $this->render('foms-second-step', ['x' => $x]);
     }
 
+    /**
+     * Контроллер для третьего шага выгрузки
+     * @param type $message
+     * @return type
+     */
     public function actionFomsThirdStep($message = "") {
         $start = date("Y-m-01", strtotime("-20 days"));
         $end = date("Y-m-t", strtotime("-20 days"));
@@ -834,4 +840,23 @@ class FomsController extends AppController {
         @unlink("reestr/VCM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.xml");
     }
 
+    
+        /**
+     * Генерация файла для статиста и стола справок
+     * @return type
+     */
+    public function actionExpertise() {
+        $model = new ExpertParser();
+        if (Yii::$app->request->isPost) {
+            $model->xlsFile = UploadedFile::getInstance($model, 'xlsFile');
+            if ($model->upload()) {
+                if ($model->parseNumbersOfCalls()) {
+                    
+                } 
+                return $this->render('report-insured', ['model' => $model]);
+            }
+        } else
+            return $this->render('report-insured', ['model' => $model]);
+    }
+    
 }
