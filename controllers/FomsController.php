@@ -840,8 +840,7 @@ class FomsController extends AppController {
         @unlink("reestr/VCM560109T56_" . date("y", time() - 20 * 24 * 3600) . date("m", time() - 20 * 24 * 3600) . "101.xml");
     }
 
-    
-        /**
+    /**
      * Генерация файла для статиста и стола справок
      * @return type
      */
@@ -851,12 +850,12 @@ class FomsController extends AppController {
             $model->xlsFile = UploadedFile::getInstance($model, 'xlsFile');
             if ($model->upload()) {
                 if ($model->parseNumbersOfCalls()) {
-                    
-                } 
+                    return $this->render('expertise', ['model' => $model]);
+                }
                 return $this->render('expertise', ['model' => $model]);
             }
-        } else
+        } 
             return $this->render('expertise', ['model' => $model]);
     }
-    
+
 }
