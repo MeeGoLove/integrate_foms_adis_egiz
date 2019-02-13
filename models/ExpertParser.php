@@ -38,14 +38,13 @@ class ExpertParser extends Model {
      */
     public $end;
 
-    /*  public function rules() {
-      parent::rules();
-      return [
-      /*[['start'], 'required'],
-      [['end'], 'required'],
-      ];
-      }
-     */
+    public function rules() {
+        parent::rules();
+        return [
+            [['start'], 'required'],
+            [['end'], 'required'],
+        ];
+    }
 
     public function upload() {
         if ($this->validate()) {
@@ -77,14 +76,14 @@ class ExpertParser extends Model {
                 break;
             }
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
-            /*$res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start,
-                        'dprm<=' => $end])->limit(1)->one();
-            if (@gettype($res->numv) != "NULL") {
-                $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($res->numv, 's');
-                $expertise->getActiveSheet()->getCell("C" . $i)->setValueExplicit($res->stbr, 's');
-                $expertise->getActiveSheet()->getCell("D" . $i)->setValueExplicit($res->dprm, 's');
-            }*/
-            $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($i." ".$start, 's');
+            /* $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start,
+              'dprm<=' => $end])->limit(1)->one();
+              if (@gettype($res->numv) != "NULL") {
+              $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($res->numv, 's');
+              $expertise->getActiveSheet()->getCell("C" . $i)->setValueExplicit($res->stbr, 's');
+              $expertise->getActiveSheet()->getCell("D" . $i)->setValueExplicit($res->dprm, 's');
+              } */
+            $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($i . " " . $start, 's');
             $i++;
         }
         //Сохранить документ
