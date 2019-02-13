@@ -11,7 +11,7 @@ $this->title = 'Экспертиза';
 <h3>Экспертиза</h3>
 <p></p>
 <?php
-$form = ActiveForm::begin(            
+$form = ActiveForm::begin( ['options' => ['enctype' => 'multipart/form-data']]           
         );
 ?>
 
