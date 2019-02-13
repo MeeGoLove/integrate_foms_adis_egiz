@@ -853,10 +853,10 @@ class FomsController extends AppController {
                 if ($model->parseNumbersOfCalls()) {
                     
                 } 
-                return $this->render('report-insured', ['model' => $model]);
+                return $this->render('expertise', ['model' => $model]);
             }
         } else
-            return $this->render('report-insured', ['model' => $model]);
+            return $this->render('expertise', ['model' => $model]);
     }
     
 }
