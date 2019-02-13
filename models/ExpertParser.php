@@ -41,8 +41,8 @@ class ExpertParser extends Model {
     public function rules() {
         parent::rules();
         return [
-            [['start'], 'required'],
-            [['end'], 'required'],
+            /*[['start'], 'required'],
+            [['end'], 'required'],*/
         ];
     }
 
