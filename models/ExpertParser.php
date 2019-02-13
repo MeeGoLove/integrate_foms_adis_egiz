@@ -78,8 +78,8 @@ class ExpertParser extends Model {
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
             $res = ArchiveCalls::find()->
                             where(['ngod' => $ngod])->
-                            andWhere(['dprm', '>=', $start])->
-                            andWhere(['dprm', '<=', $end])->limit(1)->one();
+                            andWhere(['>=', 'dprm', $start])->
+                            andWhere(['<=', 'dprm', $end])->limit(1)->one();
             if (@gettype($res->numv) != "NULL") {
                 $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit($res->numv, 's');
                 $expertise->getActiveSheet()->getCell("C" . $i)->setValueExplicit($res->stbr, 's');
