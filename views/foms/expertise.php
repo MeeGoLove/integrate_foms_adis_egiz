@@ -4,15 +4,13 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use unclead\multipleinput\MultipleInput;
 use yii\widgets\Pjax;
-
-#use kartik\date\DatePicker;
+//use kartik\date\DatePicker;
 $this->title = 'Экспертиза';
 ?>
 
 
 <h3>Экспертиза</h3>
 <p></p>
-<?= $form->field($model, 'xlsFile')->fileInput() ?>
 <?php
 $form = ActiveForm::begin([
             'enableAjaxValidation' => true,
@@ -53,6 +51,7 @@ $form->field($model, 'end')->widget(kartik\date\DatePicker::className(), ['data'
         'width' => 80,
 ]]);
 ?>
+<?= $form->field($model, 'xlsFile')->fileInput() ?>
 <?= Html::submitButton('Сформировать файл', ['class' => 'btn btn-success']); ?>
 <?php ActiveForm::end();
 ?>
