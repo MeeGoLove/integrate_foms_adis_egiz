@@ -38,14 +38,14 @@ class ExpertParser extends Model {
      */
     public $end;
 
-    public function rules() {
+ /*  public function rules() {
         parent::rules();
         return [
-            [['start'], 'required'],
+            /*[['start'], 'required'],
             [['end'], 'required'],
         ];
     }
-
+*/
     public function upload() {
         if ($this->validate()) {
             $this->xlsFile->saveAs('uploads/expertise.xls');
