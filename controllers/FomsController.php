@@ -848,7 +848,9 @@ class FomsController extends AppController {
         $model = new ExpertParser();
         if (Yii::$app->request->isPost) {
             $model->xlsFile = UploadedFile::getInstance($model, 'xlsFile');
+            $model->load(Yii::$app->request->post());
             if ($model->upload()) {
+                $model->load(Yii::$app->request->post());
                 if ($model->parseNumbersOfCalls($model->start, $model->end)) {
                     return $this->render('expertise', ['model' => $model]);
                 }
