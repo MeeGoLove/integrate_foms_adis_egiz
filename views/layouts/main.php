@@ -37,7 +37,7 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    ['label' => 'Графики выгрузки в ЕГИСЗ', 'url' => ['/site/index']],
+                    ['label' => 'Экспертиза', 'url' => ['/foms/expertise']],
                     ['label' => 'Выгрузка счетов', 'items' => [
                             ['label' => '1 шаг выгрузки', 'url' => ['/foms/foms-first-step']],
                             ['label' => '2 шаг выгрузки', 'url' => ['/foms/foms-second-step']],
