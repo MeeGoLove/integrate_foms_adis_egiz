@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "archive_calls".
+ * This is the model class for table "archive_calls_old".
  *
  * @property int $data_call_id
  * @property string $numv LNG_NUMV
@@ -146,14 +146,14 @@ use Yii;
  * @property string $glucometry_1
  * @property string $glucometry_2
  */
-class ArchiveCalls extends \yii\db\ActiveRecord
+class ArchiveCallsOld extends \yii\db\ActiveRecord
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'archive_calls';
+        return 'archive_calls_old';
     }
 
     /**
@@ -165,7 +165,7 @@ class ArchiveCalls extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rules()
     {
@@ -203,61 +203,61 @@ class ArchiveCalls extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function attributeLabels()
     {
         return [
             'data_call_id' => 'Data Call ID',
-            'numv' => 'сут. №',
-            'ngod' => 'год. №',
-            'ssmp' => 'ССМП',
-            'rsmp' => 'РССМП',
-            'prty' => 'Срочность',
-            'sect' => 'Сектор',
-            'rjon' => 'Район',
-            'city' => 'Город',
-            'ulic' => 'Улица',
-            'dom' => 'Дом',
-            'kvar' => 'Квартира',
-            'podz' => 'Подъезд',
-            'etaj' => 'Этаж',
+            'numv' => 'Numv',
+            'ngod' => 'Ngod',
+            'ssmp' => 'Ssmp',
+            'rsmp' => 'Rsmp',
+            'prty' => 'Prty',
+            'sect' => 'Sect',
+            'rjon' => 'Rjon',
+            'city' => 'City',
+            'ulic' => 'Ulic',
+            'dom' => 'Dom',
+            'kvar' => 'Kvar',
+            'podz' => 'Podz',
+            'etaj' => 'Etaj',
             'kodp' => 'Kodp',
-            'telf' => 'Телефон',
-            'mest' => 'Место вызова',
-            'comm' => 'Комментарий',
-            'povd' => 'Повод',
-            'fam' => 'Фамилия',
-            'imya' => 'Имя',
-            'otch' => 'Отчество',
-            'vozr' => 'Возраст',
-            'pol' => 'Пол',
-            'ktov' => 'Кто вызвал',
-            'povt' => 'Повторный',
-            'prof' => 'Профиль',
+            'telf' => 'Telf',
+            'mest' => 'Mest',
+            'comm' => 'Comm',
+            'povd' => 'Povd',
+            'fam' => 'Fam',
+            'imya' => 'Imya',
+            'otch' => 'Otch',
+            'vozr' => 'Vozr',
+            'pol' => 'Pol',
+            'ktov' => 'Ktov',
+            'povt' => 'Povt',
+            'prof' => 'Prof',
             'smpt' => 'Smpt',
-            'stan' => 'п/с',
-            'dprm' => 'Принят',
-            'tprm' => 'Время приема',
-            'wday' => 'День недели',
-            'line' => 'Линия',
-            'rezl' => 'Результат',
+            'stan' => 'Stan',
+            'dprm' => 'Dprm',
+            'tprm' => 'Tprm',
+            'wday' => 'Wday',
+            'line' => 'Line',
+            'rezl' => 'Rezl',
             'sgsp' => 'Sgsp',
             'rgsp' => 'Rgsp',
-            'kuda' => 'Доставлен',
-            'ds1' => 'Диагноз',
-            'ds2' => 'Диагноз осложн.',
-            'trav' => 'Отравление',
-            'alk' => 'Алкогольное отр.',
-            'numb' => '№ бригады',
+            'kuda' => 'Kuda',
+            'ds1' => 'Ds1',
+            'ds2' => 'Ds2',
+            'trav' => 'Trav',
+            'alk' => 'Alk',
+            'numb' => 'Numb',
             'smpb' => 'Smpb',
-            'stbr' => 'п/с',
+            'stbr' => 'Stbr',
             'stbb' => 'Stbb',
             'prfb' => 'Prfb',
             'ncar' => 'Ncar',
             'rcod' => 'Rcod',
             'tabn' => 'Tabn',
-            'dokt' => 'СБ',
+            'dokt' => 'Dokt',
             'tab2' => 'Tab2',
             'tab3' => 'Tab3',
             'tab4' => 'Tab4',
