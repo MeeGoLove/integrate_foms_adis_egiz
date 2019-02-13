@@ -852,7 +852,7 @@ class FomsController extends AppController {
             if ($model->upload()) {
                 $model->load(Yii::$app->request->post());
                 if ($model->parseNumbersOfCalls($model->start, $model->end)) {
-                    return Yii::$app->response->sendFile(Yii::getAlias('uploads/Готово.xls'));
+                    return Yii::$app->response->sendFile('uploads/Готово.xls');
                 } else {
                     throw new \yii\web\HttpException(500, 'При генерации файла для экспертизы '
                     . 'возникла непредвиденная ошибка, обратитесь '
