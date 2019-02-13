@@ -63,7 +63,7 @@ class ExpertParser extends Model {
             'end' => 'Дата окончания экспертизы'];
     }
 
-    public static function parseNumbersOfCalls() {
+    public static function parseNumbersOfCalls($start, $end) {
         //Открыть полученный документ
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xls");
         $expertise = $reader->load("uploads/expertise.xls");
@@ -78,8 +78,8 @@ class ExpertParser extends Model {
                 break;
             }
             $ngod = $expertise->getActiveSheet()->getCell("A" . $i)->getValue();
-            $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $this->start, 
-                    'dprm<=' => $this->end])->limit (1)->one();
+            $res = ArchiveCalls::find(['ngod' => $ngod, 'dprm>=' => $start, 
+                    'dprm<=' => $end])->limit (1)->one();
             $expertise->getActiveSheet()->getCell("B" . $i)->setValueExplicit(count($res), 's');
             $i++;
         }
