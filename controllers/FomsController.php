@@ -322,7 +322,7 @@ class FomsController extends AppController {
             //проверяем что вызов не переходит на следующий месяц
             $time_end = strtotime(date("Y-m") . "-01 00:00");
             //Для отладки!!!
-            $time_end = strtotime("2019-01-30 00:00");
+            //$time_end = strtotime("2019-01-30 00:00");
             $time_mission = strtotime((string) $hm->Z_SL->SL->DATE_2 . " " . (string) $hm->Z_SL->SL->COMENTSL->TIME_MISSION);
             //Проверка, что окончание вызова не ушли на следующий месяц
             if (($time_end - $time_mission) > 0) {
@@ -349,13 +349,13 @@ class FomsController extends AppController {
                         $neotl++; //счетчик неотложных вызовов
 
                         if ((date("H", $time_mission) >= 19)
-                                or (
+                                /*or (
                                 date("H", $time_mission) >= 14
                                 and (
                                 date("d", $time_mission) == 3
                                 or date("d", $time_mission) == 4
                                 or date("d", $time_mission) == 8)
-                                )) {
+                                )*/) {
                             //echo "<p style=\"color:#ff0000\">Неотложка после 19:00, карта " . $hm->Z_SL->SL->NHISTORY . "</p>";
                             unset($hm->Z_SL->SL->USL);
                             unset($hm->Z_SL->SL->COMENTSL->METHOD);
@@ -363,10 +363,12 @@ class FomsController extends AppController {
                             if (substr($hm->Z_SL->SL->IDDOKT, 0, 1) == "1") {
                                 $hm->Z_SL->SUMV = "3725.53";
                                 $hm->Z_SL->SL->SUM_M = "3725.53";
+                                $hm->Z_SL->FOR_POM = "1";
                             }
                             if (substr($hm->Z_SL->SL->IDDOKT, 0, 1) >= 2) {
                                 $hm->Z_SL->SUMV = "1920.21";
                                 $hm->Z_SL->SL->SUM_M = "1920.21";
+                                $hm->Z_SL->FOR_POM = "1";
                             }
                             $hm->Z_SL->FOR_POM = 1;
                             $hm->Z_SL->IDSP = 36;
@@ -490,7 +492,7 @@ class FomsController extends AppController {
                 $hm->Z_SL->DATE_Z_1 = $hm->Z_SL->SL->DATE_1;
                 $hm->Z_SL->DATE_Z_2 = $hm->Z_SL->SL->DATE_2;
                 //                     +++НЕОТЛОЖКА+++
-                //для неотложки добавляем узел P_CEL со значением 2
+                //для неотложки добавляем узел P_CEL со значением 1.1
                 //
 		if ((string) $hm->Z_SL->SUMV === "662.02") {
                     //Временное решение
