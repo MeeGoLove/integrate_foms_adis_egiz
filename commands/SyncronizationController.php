@@ -442,7 +442,7 @@ class SyncronizationController extends Controller {
             $calls = ArchiveCalls::findBySql("SELECT ngod, tprm, fam, imya, "
                             . "otch, pol, rezl, tabn, medc_str, mest, ds1, spol, "
                             . "datr, snils, "
-                            . " inf2, inf5 FROM archive_calls WHERE "
+                            . " inf2, inf5, stbr FROM archive_calls WHERE "
                             . "dprm>=\"$start\" and dprm<=\"$end\""
                             . ";")->asArray()->all();
             $countSended = 0;
@@ -477,6 +477,7 @@ class SyncronizationController extends Controller {
                 $trCallResp->call->patient->snils = $call["snils"];
                 $trCallResp->call->patient->document_type = $call["inf2"];
                 $trCallResp->call->patient->document_number = $call["inf5"];
+                $trCallResp->brigade->substation_control=$call["stbr"];
                 if ($call["datr"] != "") {
                     $day = $call["datr"][0] . $call["datr"][1];
                     $mounth = $call["datr"][3] . $call["datr"][4];
