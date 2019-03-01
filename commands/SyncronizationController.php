@@ -441,7 +441,7 @@ class SyncronizationController extends Controller {
         try {
             $calls = ArchiveCalls::findBySql("SELECT ngod, tprm, fam, imya, "
                             . "otch, pol, rezl, tabn, medc_str, mest, ds1, spol, "
-                            . "kod1, inf4, "
+                            . "datr, snils, "
                             . " inf2, inf5 FROM archive_calls WHERE "
                             . "dprm>=\"$start\" and dprm<=\"$end\""
                             . ";")->asArray()->all();
@@ -474,13 +474,13 @@ class SyncronizationController extends Controller {
                 $trCallResp->call->patient->patronymic = $call["otch"];
                 $trCallResp->call->patient->gender = $call["pol"];
                 $trCallResp->call->patient->insurance = $call["spol"];
-                $trCallResp->call->patient->snils = $call["inf4"];
+                $trCallResp->call->patient->snils = $call["snils"];
                 $trCallResp->call->patient->document_type = $call["inf2"];
                 $trCallResp->call->patient->document_number = $call["inf5"];
-                if ($call["kod1"] != "") {
-                    $day = $call["kod1"][0] . $call["kod1"][1];
-                    $mounth = $call["kod1"][3] . $call["kod1"][4];
-                    $year = $call["kod1"][6] . $call["kod1"][7] . $call["kod1"][8] . $call["kod1"][9];
+                if ($call["datr"] != "") {
+                    $day = $call["datr"][0] . $call["datr"][1];
+                    $mounth = $call["datr"][3] . $call["datr"][4];
+                    $year = $call["datr"][6] . $call["datr"][7] . $call["datr"][8] . $call["datr"][9];
                     $trCallResp->call->patient->birthday = $year . "-" . $mounth . "-" . $day;
                 }
                 try {
