@@ -357,6 +357,16 @@ class SyncronizationController extends Controller {
                                         $syncmedic->employment = SyncronizationController::ConvertBirthday1C($res[0][0]);
                                     }
                                     break;
+                                case "Начальное":
+                                    $tempDay = strtotime(SyncronizationController::ConvertBirthday1C($res[0][0]));
+                                    if ($syncmedic->employment == "")
+                                        $tempDay2 = strtotime(date("Y-m-d"));
+                                    else
+                                        $tempDay2 = strtotime($syncmedic->employment);
+                                    if ($tempDay2 >= $tempDay) {
+                                        $syncmedic->employment = SyncronizationController::ConvertBirthday1C($res[0][0]);
+                                    }
+                                    break;
                                 case "Кадровое":
                                     $tempDay = strtotime(SyncronizationController::ConvertBirthday1C($res[0][0]));
                                     if ($syncmedic->employment == "")
@@ -477,7 +487,7 @@ class SyncronizationController extends Controller {
                 $trCallResp->call->patient->snils = $call["snils"];
                 $trCallResp->call->patient->document_type = $call["inf2"];
                 $trCallResp->call->patient->document_number = $call["inf5"];
-                $trCallResp->brigade->substation_control=$call["stbr"];
+                $trCallResp->brigade->substation_control = $call["stbr"];
                 if ($call["datr"] != "") {
                     $day = $call["datr"][0] . $call["datr"][1];
                     $mounth = $call["datr"][3] . $call["datr"][4];
