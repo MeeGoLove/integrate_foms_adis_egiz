@@ -357,7 +357,7 @@ class SyncronizationController extends Controller {
                                         $syncmedic->employment = SyncronizationController::ConvertBirthday1C($res[0][0]);
                                     }
                                     break;
-                                case "Начальное":
+                                case "Начальная":
                                     $tempDay = strtotime(SyncronizationController::ConvertBirthday1C($res[0][0]));
                                     if ($syncmedic->employment == "")
                                         $tempDay2 = strtotime(date("Y-m-d"));
