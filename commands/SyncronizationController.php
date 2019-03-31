@@ -413,7 +413,7 @@ class SyncronizationController extends Controller {
             $addMedics->pol = $el->pol;
             $addMedics->dr = $el->dr;
             $addMedics->reg = $el->reg;
-            $addMedics->update();
+            $addMedics->save();
         }
         return 0;
     }
