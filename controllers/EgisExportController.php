@@ -544,6 +544,10 @@ class EgisExportController extends AppController {
         if ($resourceGroupId != "") {
             $rendRequest->resourceGroupId = $resourceGroupId;
         }
+        else {
+          Yii::info("При создании услуги для случая $medicalCaseId  не найден ресурс!"
+                        , 'egis_error');  
+        }
         try {
             $rendResponse = Yii::$app->medservices->send($rendRequest);
             Yii::info("Создали оказаннную услугу {" . $rendResponse->id . "} для пациента $patientUid, "
