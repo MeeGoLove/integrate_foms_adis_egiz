@@ -123,7 +123,6 @@ class EgisExportController extends AppController {
         $neotlojka = false;
 //Собственно проверка на неотложку
         if (($dayOfWeek >= 1) && ($dayOfWeek <= 5)) {//если рабочие дни
-            
             if ($dayOfWeek == 6) {//если день суббота
                 //Субботы не выгружаются!!! Оставил код на запас
                 if (($mesto == "1") && ($rezl != "14") && ($rezl != "15")) {
@@ -131,6 +130,7 @@ class EgisExportController extends AppController {
                     $endDay = strtotime("$day $endSaturday");
                     if (($startDay <= $tprmTimestamp) && ($tprmTimestamp <= $endDay) && (in_array($ds1, $diagnoses))) {
                         $neotlojka = true;
+                        $neotlojka = false;
 //echo "В квартире/в нужное время/с нужным диагнозом<br>";
                     }//в квартире/в нужное время/с нужным диагнозом в субботу
                     else {
@@ -528,7 +528,7 @@ class EgisExportController extends AppController {
      * @param type $orgId Идентификатор организации
      * @param type $fundingSourceTypeId Тип источника финансирования
      */
-    public static function createServiceRend($patientUid, $medicalCaseId, $stepId, $dprm, $serviceId, $orgId = 2052479, $fundingSourceTypeId = 1, $connectError = false) {
+    public static function createServiceRend($patientUid, $medicalCaseId, $stepId, $dprm, $serviceId, $resourceGroupId = "", $orgId = 2052479, $fundingSourceTypeId = 1, $connectError = false) {
         $rendRequest = new sendServiceRend();
         $rendRequest->dateFrom = $dprm;
         $rendRequest->plannedDate = $dprm;
@@ -541,6 +541,9 @@ class EgisExportController extends AppController {
         $rendRequest->quantity = 1;
         $rendRequest->serviceId = $serviceId;
         $rendRequest->stepId = $stepId;
+        if ($resourceGroupId != "") {
+            $rendRequest->resourceGroupId = $resourceGroupId;
+        }
         try {
             $rendResponse = Yii::$app->medservices->send($rendRequest);
             Yii::info("Создали оказаннную услугу {" . $rendResponse->id . "} для пациента $patientUid, "
@@ -556,7 +559,7 @@ class EgisExportController extends AppController {
                     return null;
                 } else {
                     sleep(30);
-                    return EgisExportController::createServiceRend($patientUid, $medicalCaseId, $stepId, $dprm, $serviceId, $orgId, $fundingSourceTypeId, true);
+                    return EgisExportController::createServiceRend($patientUid, $medicalCaseId, $stepId, $dprm, $serviceId, $resourceGroupId, $orgId, $fundingSourceTypeId, true);
                 }
             } else {
                 Yii::info("При создании услуги для пациента $patientUid,"
@@ -642,209 +645,212 @@ class EgisExportController extends AppController {
              * ...
              * 
              */
-            
             //проверяем, что вызов не обслужен ЦРБ
-            if ($exportcall->brigade->substation_control!=7) { 
-            if (@gettype($exportcall->call->result) != "NULL")
-                $result = $exportcall->call->result;
-            else
-                $result = "";          
-            $exlResult = ['04', '06', '07', '4', '6', '7','10', '17', '18', '20', '90', '91', '92', '93', '94', '95',
-                '41', '42', '96', '97', '99', '9<', '9>', '9?', '9[', '9]', '9~', '>>', ''];
-            Yii::info("На выгрузку получен вызов " .
-                    $exportcall->call->global_call_number, 'egis_pass');
+            if ($exportcall->brigade->substation_control != 7) {
+                if (@gettype($exportcall->call->result) != "NULL")
+                    $result = $exportcall->call->result;
+                else
+                    $result = "";
+                $exlResult = ['04', '06', '07', '4', '6', '7', '10', '17', '18', '20', '90', '91', '92', '93', '94', '95',
+                    '41', '42', '96', '97', '99', '9<', '9>', '9?', '9[', '9]', '9~', '>>', ''];
+                Yii::info("На выгрузку получен вызов " .
+                        $exportcall->call->global_call_number, 'egis_pass');
 
-            if (@gettype($exportcall->call->call_time) != "NULL")
-                $dprm = $exportcall->call->call_time;
-            else
-                $dprm = "";             
-            $tprm = EgisExportController::converCallTime($dprm);
-            $dprmCheck = date("Y-m-d", strtotime($tprm));
-            //проверяем, что вызов не приходит к нам повторно
-            $loadedCall = SavedCalls::findAll(['ngod' => $exportcall->call->global_call_number,
-                        'dprm' => $dprmCheck]);
-            if (count($loadedCall) == 0) {
-                //проверяем, что у нас подходящий результат вызова
-                if (!in_array($result, $exlResult)) {
-
-
-                    $call_number = $exportcall->call->global_call_number;
+                if (@gettype($exportcall->call->call_time) != "NULL")
+                    $dprm = $exportcall->call->call_time;
+                else
+                    $dprm = "";
+                $tprm = EgisExportController::converCallTime($dprm);
+                $dprmCheck = date("Y-m-d", strtotime($tprm));
+                //проверяем, что вызов не приходит к нам повторно
+                $loadedCall = SavedCalls::findAll(['ngod' => $exportcall->call->global_call_number,
+                            'dprm' => $dprmCheck]);
+                if (count($loadedCall) == 0) {
+                    //проверяем, что у нас подходящий результат вызова
+                    if (!in_array($result, $exlResult)) {
 
 
-                    //поправь остальные
-                    if (@gettype($exportcall->call->patient->surname) != "NULL")
-                        $surname = $exportcall->call->patient->surname;
-                    else
-                        $surname = "";
+                        $call_number = $exportcall->call->global_call_number;
 
-                    if (@gettype($exportcall->call->patient->name) != "NULL")
-                        $name = $exportcall->call->patient->name;
-                    else
-                        $name = "";
 
-                    if (@gettype($exportcall->call->patient->patronymic) != "NULL")
-                        $patrName = $exportcall->call->patient->patronymic;
-                    else
-                        $patrName = "";
+                        //поправь остальные
+                        if (@gettype($exportcall->call->patient->surname) != "NULL")
+                            $surname = $exportcall->call->patient->surname;
+                        else
+                            $surname = "";
 
-                    if (@gettype($exportcall->call->patient->snils) != "NULL")
-                        $snils = $exportcall->call->patient->snils;
-                    else
-                        $snils = "";
+                        if (@gettype($exportcall->call->patient->name) != "NULL")
+                            $name = $exportcall->call->patient->name;
+                        else
+                            $name = "";
 
-                    if (@gettype($exportcall->call->patient->birthday) != "NULL")
-                        $birthday = $exportcall->call->patient->birthday;
-                    else
-                        $birthday = "";
+                        if (@gettype($exportcall->call->patient->patronymic) != "NULL")
+                            $patrName = $exportcall->call->patient->patronymic;
+                        else
+                            $patrName = "";
 
-                    if (@gettype($exportcall->call->patient->insurance) != "NULL")
-                        $insurance = $exportcall->call->patient->insurance;
-                    else
-                        $insurance = "";
+                        if (@gettype($exportcall->call->patient->snils) != "NULL")
+                            $snils = $exportcall->call->patient->snils;
+                        else
+                            $snils = "";
 
-                    if (@gettype($exportcall->call->patient->document_type) != "NULL")
-                        $typeDoc = $exportcall->call->patient->document_type;
-                    else
-                        $typeDoc = "";
+                        if (@gettype($exportcall->call->patient->birthday) != "NULL")
+                            $birthday = $exportcall->call->patient->birthday;
+                        else
+                            $birthday = "";
 
-                    if (@gettype($exportcall->call->patient->document_number) != "NULL")
-                        $nomDoc = $exportcall->call->patient->document_number;
-                    else
-                        $nomDoc = "";
+                        if (@gettype($exportcall->call->patient->insurance) != "NULL")
+                            $insurance = $exportcall->call->patient->insurance;
+                        else
+                            $insurance = "";
 
-                    if (@gettype($exportcall->call->patient->info) != "NULL")
-                        $info = $exportcall->call->patient->info;
-                    else
-                        $info = "";
+                        if (@gettype($exportcall->call->patient->document_type) != "NULL")
+                            $typeDoc = $exportcall->call->patient->document_type;
+                        else
+                            $typeDoc = "";
 
-                    if (@gettype($exportcall->call->patient->gender) != "NULL")
-                        $gender = $exportcall->call->patient->gender;
-                    else
-                        $gender = "";
+                        if (@gettype($exportcall->call->patient->document_number) != "NULL")
+                            $nomDoc = $exportcall->call->patient->document_number;
+                        else
+                            $nomDoc = "";
+
+                        if (@gettype($exportcall->call->patient->info) != "NULL")
+                            $info = $exportcall->call->patient->info;
+                        else
+                            $info = "";
+
+                        if (@gettype($exportcall->call->patient->gender) != "NULL")
+                            $gender = $exportcall->call->patient->gender;
+                        else
+                            $gender = "";
 //Сначала ищем пациента по СНИЛС
-                    if ($surname != "") {
-                        $tempPatientId = EgisExportController::findPatientbySnils($surname, $name, $patrName, $birthday, $snils);
+                        if ($surname != "") {
+                            $tempPatientId = EgisExportController::findPatientbySnils($surname, $name, $patrName, $birthday, $snils);
 //Если не найден, ...
-                        switch (@gettype($tempPatientId)) {
-                            case "NULL":
-                                $patientId = "";
-                                break;
-                            case "array":
-                                Yii::info("Найдено большего одного физ.лица!", 'egis_pass');
-                                $patientId = "";
+                            switch (@gettype($tempPatientId)) {
+                                case "NULL":
+                                    $patientId = "";
+                                    break;
+                                case "array":
+                                    Yii::info("Найдено большего одного физ.лица!", 'egis_pass');
+                                    $patientId = "";
 //findPatientbyOtherDocument
-                                break;
-                            default :
-                                $patientId = $tempPatientId;
+                                    break;
+                                default :
+                                    $patientId = $tempPatientId;
+                            }
+                        } else {
+                            $patientId = "";
                         }
-                    } else {
-                        $patientId = "";
-                    }
 //если есть id пациента идем дальше, в противном случае
 //ничего не отправляем
-                    if ($patientId != "") {
+                        if ($patientId != "") {
 //забираем остальные данные
 //$ds1 диагноз, $place место вызова, $dprm дата/время приема, 
-                        if (@gettype($exportcall->call->diagnosis) != "NULL")
-                            $ds1 = $exportcall->call->diagnosis;
-                        else
-                            $ds1 = "";
-                        if (@gettype($exportcall->call->place) != "NULL")
-                            $place = $exportcall->call->place;
-                        else
-                            $place = "";
-                        if (@gettype($exportcall->brigade->senior_personnel->code) != "NULL")
-                            $tabAdis = $exportcall->brigade->senior_personnel->code;
-                        else
-                            $tabAdis = "";
+                            if (@gettype($exportcall->call->diagnosis) != "NULL")
+                                $ds1 = $exportcall->call->diagnosis;
+                            else
+                                $ds1 = "";
+                            if (@gettype($exportcall->call->place) != "NULL")
+                                $place = $exportcall->call->place;
+                            else
+                                $place = "";
+                            if (@gettype($exportcall->brigade->senior_personnel->code) != "NULL")
+                                $tabAdis = $exportcall->brigade->senior_personnel->code;
+                            else
+                                $tabAdis = "";
 
 
 
-                        //проверим тип вызова(неотложка/экстренный)
-                        $typeCase = EgisExportController::getTypeCase($tprm, $ds1, $place, $result);
-                        //Приведем результат вызова к результату ЕГИЗ
-                        $egisResult = EgisExportController::getEgisResults($result);
-                        //Приведем исход вызова к исходу ЕГИЗ
-                        //Мед. средств может и не быть!                        
-                        if (@gettype($exportcall->medical_supplies) != "NULL")
-                            $supllies = $exportcall->medical_supplies;
-                        else
-                            $supllies = [];
-                        $code = "";
-                        foreach ($supllies as $suplie) {
-                            $code = $suplie->code;
-                            if ($code[0] . $code[1] . $code[2] == 800)
-                                break;
-                        }
-                        $egisOut = EgisExportController::getEgisOut($code);
-                        //привели диагноз в нужный вид
-                        $diagnosis = EgisExportController::getDiagnos($ds1);
-                        //отказ от осмотра приводим к диагнозу Z53.2
-                        if ($egisResult == 13) {
-                            Yii::info("<b>Отказ от осмотра привели к диагнозу Z53.2</b>", 'egis_pass');
-                            $diagnosis["diagnosId"] = 13659;
-                        }
-
-                        //не найден на месте приводим к диагнозу Z53.8
-                        if ($egisResult == 39) {
-                            Yii::info("<b>Не найден на месте привели к диагнозу Z53.8</b>", 'egis_pass');
-                            $diagnosis["diagnosId"] = 13656;
-                        }
-
-                        $dprm = date("Y-m-d", strtotime($tprm));
-                        $resourceGroupId = EgisExportController::findResource($tabAdis);
-                        $serviceTypeId = EgisExportController::findService($tabAdis);
-                        $caseId = EgisExportController::createCase($patientId, $call_number, $typeCase["caseTypeId"], $typeCase["initGoalId"], "$dprm", $typeCase["careProvidingFormId"]);
-                        $serviceRendId = null;
-                        if (@gettype($caseId) != "NULL") {
-                            if ($caseId != "connect_error") {
-                                $savedCall = new SavedCalls();
-                                $savedCall->ngod = $call_number;
-                                $savedCall->dprm = $dprm;
-                                $savedCall->tprm = $tprm;
-                                $savedCall->patientId = $patientId;
-                                $savedCall->caseId = $caseId;
-                                $savedCall->serviceId = $serviceTypeId;
-                                if (@gettype($resourceGroupId) != "NULL") {
-                                    $savedCall->resourceId = $resourceGroupId;
-                                    $visiId = EgisExportController::createVisit($caseId, $diagnosis["stageId"], $diagnosis["typeId"], $diagnosis["diagnosId"], "$dprm", "$tprm", $typeCase["initGoalId"], 2, 121, $egisOut, $egisResult, $resourceGroupId);
-                                } else {
-                                    $visiId = EgisExportController::createVisit($caseId, $diagnosis["stageId"], $diagnosis["typeId"], $diagnosis["diagnosId"], "$dprm", "$tprm", $typeCase["initGoalId"], 2, 121, $egisOut, $egisResult);
-                                }
-                                if (@gettype($visiId) != "NULL") {
-                                    $savedCall->visitId = $visiId;
-                                    $serviceRendId = EgisExportController::createServiceRend($patientId, $caseId, $visiId, $dprm, $serviceTypeId);
-                                }
-                                if (@gettype($serviceRendId) != "NULL") {
-                                    $savedCall->serviceRendId = $serviceRendId;
-                                }
-                                $savedCall->dateSync = date("Y-m-d H:i:s");
-                                if ($exportcall->ext_system_code==9115){
-                                    $savedCall->isFromAdis = true;
-                                }
-                                else $savedCall->isFromAdis = false;
-                                $savedCall->save();
-                            } else {
-                                //вот тут сохранение вызова на повторную попытку
+                            //проверим тип вызова(неотложка/экстренный)
+                            $typeCase = EgisExportController::getTypeCase($tprm, $ds1, $place, $result);
+                            //Приведем результат вызова к результату ЕГИЗ
+                            $egisResult = EgisExportController::getEgisResults($result);
+                            //Приведем исход вызова к исходу ЕГИЗ
+                            //Мед. средств может и не быть!                        
+                            if (@gettype($exportcall->medical_supplies) != "NULL")
+                                $supllies = $exportcall->medical_supplies;
+                            else
+                                $supllies = [];
+                            $code = "";
+                            foreach ($supllies as $suplie) {
+                                $code = $suplie->code;
+                                if ($code[0] . $code[1] . $code[2] == 800)
+                                    break;
                             }
+                            $egisOut = EgisExportController::getEgisOut($code);
+                            //привели диагноз в нужный вид
+                            $diagnosis = EgisExportController::getDiagnos($ds1);
+                            //отказ от осмотра приводим к диагнозу Z53.2
+                            if ($egisResult == 13) {
+                                Yii::info("<b>Отказ от осмотра привели к диагнозу Z53.2</b>", 'egis_pass');
+                                $diagnosis["diagnosId"] = 13659;
+                            }
+
+                            //не найден на месте приводим к диагнозу Z53.8
+                            if ($egisResult == 39) {
+                                Yii::info("<b>Не найден на месте привели к диагнозу Z53.8</b>", 'egis_pass');
+                                $diagnosis["diagnosId"] = 13656;
+                            }
+
+                            $dprm = date("Y-m-d", strtotime($tprm));
+                            $resourceGroupId = EgisExportController::findResource($tabAdis);
+                            $serviceTypeId = EgisExportController::findService($tabAdis);
+                            $caseId = EgisExportController::createCase($patientId, $call_number, $typeCase["caseTypeId"], $typeCase["initGoalId"], "$dprm", $typeCase["careProvidingFormId"]);
+                            $serviceRendId = null;
+                            if (@gettype($caseId) != "NULL") {
+                                if ($caseId != "connect_error") {
+                                    $savedCall = new SavedCalls();
+                                    $savedCall->ngod = $call_number;
+                                    $savedCall->dprm = $dprm;
+                                    $savedCall->tprm = $tprm;
+                                    $savedCall->patientId = $patientId;
+                                    $savedCall->caseId = $caseId;
+                                    $savedCall->serviceId = $serviceTypeId;
+                                    if (@gettype($resourceGroupId) != "NULL") {
+                                        $savedCall->resourceId = $resourceGroupId;
+                                        $visiId = EgisExportController::createVisit($caseId, $diagnosis["stageId"], $diagnosis["typeId"], $diagnosis["diagnosId"], "$dprm", "$tprm", $typeCase["initGoalId"], 2, 121, $egisOut, $egisResult, $resourceGroupId);
+                                    } else {
+                                        $visiId = EgisExportController::createVisit($caseId, $diagnosis["stageId"], $diagnosis["typeId"], $diagnosis["diagnosId"], "$dprm", "$tprm", $typeCase["initGoalId"], 2, 121, $egisOut, $egisResult);
+                                    }
+                                    if (@gettype($visiId) != "NULL") {
+                                        $savedCall->visitId = $visiId;
+                                        if (@gettype($resourceGroupId) != "NULL") {
+                                            $serviceRendId = EgisExportController::createServiceRend($patientId, $caseId, $visiId, $dprm, $serviceTypeId, $resourceGroupId);
+                                        } else {
+                                            $serviceRendId = EgisExportController::createServiceRend($patientId, $caseId, $visiId, $dprm, $serviceTypeId);
+                                        }
+                                    }
+                                    if (@gettype($serviceRendId) != "NULL") {
+                                        $savedCall->serviceRendId = $serviceRendId;
+                                    }
+                                    $savedCall->dateSync = date("Y-m-d H:i:s");
+                                    if ($exportcall->ext_system_code == 9115) {
+                                        $savedCall->isFromAdis = true;
+                                    } else
+                                        $savedCall->isFromAdis = false;
+                                    $savedCall->save();
+                                } else {
+                                    //вот тут сохранение вызова на повторную попытку
+                                }
+                            }
+                        } else {
+                            Yii::info("Вызов отброшен, не найден пациент!", 'egis_pass');
                         }
                     } else {
-                        Yii::info("Вызов отброшен, не найден пациент!", 'egis_pass');
+                        Yii::info("На выгрузку получен вызов " .
+                                $exportcall->call->global_call_number . " вызов "
+                                . "отброшен, неподходящий результат вызова: $result", 'egis_pass');
                     }
                 } else {
-                    Yii::info("На выгрузку получен вызов " .
-                            $exportcall->call->global_call_number . " вызов "
-                            . "отброшен, неподходящий результат вызова: $result", 'egis_pass');
+                    Yii::info("Вызов " .
+                            $exportcall->call->global_call_number . " "
+                            . "отброшен, он уже был получен от сервера АДИС ранее", 'egis_pass');
                 }
             } else {
                 Yii::info("Вызов " .
                         $exportcall->call->global_call_number . " "
-                        . "отброшен, он уже был получен от сервера АДИС ранее", 'egis_pass');
-            }
-        } else {
-               Yii::info("Вызов " .
-                        $exportcall->call->global_call_number . " "
-                        . "отброшен, он принадлежит ЦРБ", 'egis_pass'); 
+                        . "отброшен, он принадлежит ЦРБ", 'egis_pass');
             }
         } catch (\Exception $ex) {
             Yii::info("Исключение прискакало:" . $ex->getMessage(), 'egis_error');

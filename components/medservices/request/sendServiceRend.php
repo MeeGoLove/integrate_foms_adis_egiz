@@ -75,7 +75,13 @@ class sendServiceRend extends BaseRequest {
      * метод getServices сервиса services-ws/services 
      */
     public $serviceId;
-
+    
+    /**
+     *
+     * @var type Идентификатор ресурса
+     */
+    public $resourceGroupId;
+    
     public function rules() {
         return [
         ];
