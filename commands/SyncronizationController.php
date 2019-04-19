@@ -383,9 +383,10 @@ class SyncronizationController extends Controller {
                             }
                         }
                         $syncmedic->save();
+                        \Yii::info("Для сотрудника табельный 1с: $tab1c, табельный АДИС:" . $rab["code"] . " найдена запись в 1С", 'egis_pass');
                     } else {
                         if ($rab["code"] <= 3000) {
-                            \Yii::info("Для сотрудника табельный 1с: $tab1c, табельный АДИС:" . $rab["code"] . " не найдена запись в 1С", 'egis_pass');
+                            //\Yii::info("Для сотрудника табельный 1с: $tab1c, табельный АДИС:" . $rab["code"] . " не найдена запись в 1С", 'egis_pass');
                         }
                     }
                 }
