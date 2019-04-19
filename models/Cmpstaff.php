@@ -9,7 +9,7 @@ use Yii;
  *
  * @property string $code
  * @property string $name
- * @property string $info
+ * @property string $snils
  * @property string $passwd
  * @property string $access
  * @property string $ssmp_id
@@ -41,7 +41,7 @@ class Cmpstaff extends \yii\db\ActiveRecord
             [['code', 'ssmp_id'], 'required'],
             [['code', 'ssmp_id'], 'string', 'max' => 5],
             [['name'], 'string', 'max' => 23],
-            [['info'], 'string', 'max' => 12],
+            [['snils'], 'string', 'max' => 12],
             [['passwd'], 'string', 'max' => 32],
             [['access'], 'string', 'max' => 4],
             [['code', 'ssmp_id'], 'unique', 'targetAttribute' => ['code', 'ssmp_id']],
@@ -56,7 +56,7 @@ class Cmpstaff extends \yii\db\ActiveRecord
         return [
             'code' => 'Code',
             'name' => 'Name',
-            'info' => 'Info',
+            'snils' => 'snils',
             'passwd' => 'Passwd',
             'access' => 'Access',
             'ssmp_id' => 'Ssmp ID',

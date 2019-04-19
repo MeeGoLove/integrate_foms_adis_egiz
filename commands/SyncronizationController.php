@@ -327,7 +327,7 @@ class SyncronizationController extends Controller {
                     //табельный номер 1С в адисе это последние 4 цифры поля инфо
                     $tab1c = substr($rab["info"], 8);
 
-                    $medic = Temp1c::findAll(['tabnum' => $tab1c]);
+                    $medic = Temp1c::find()->where(['like','tabnum' , "%$tab1c"])->all();
                     if (count($medic) != 0) {
                         $syncmedic = new Sync1cEgisAdis();
                         foreach ($medic as $job) {
