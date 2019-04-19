@@ -322,10 +322,10 @@ class SyncronizationController extends Controller {
                 //поле инфо должно быть из 12 символов
                 //поле имя не должно содержать слова "НЕ ИСПОЛЬЗОВАТЬ"
                 //поле имя не должно быть из цифр
-                if (mb_strlen($rab["info"]) == 12 and ! ((mb_strpos($rab["name"], 'НЕ ИС')
+                if (mb_strlen($rab["snils"]) == 12 and ! ((mb_strpos($rab["name"], 'НЕ ИС')
                         or preg_match_all('/\d/', $rab["name"])))) {
                     //табельный номер 1С в адисе это последние 4 цифры поля инфо
-                    $tab1c = substr($rab["info"], 8);
+                    $tab1c = substr($rab["snils"], 8);
 
                     $medic = Temp1c::find()->where(['like','tabnum' , "%$tab1c"])->all();
                     if (count($medic) != 0) {
@@ -340,7 +340,7 @@ class SyncronizationController extends Controller {
                             $syncmedic->birthday = SyncronizationController::ConvertBirthday1C($job->dr);
                             $syncmedic->codeadis = $rab["code"];
                             $syncmedic->nameadis = $rab["name"];
-                            $syncmedic->dradis = SyncronizationController::ConvertBirthdayAdis(substr($rab["info"], 0, 8));
+                            $syncmedic->dradis = SyncronizationController::ConvertBirthdayAdis(substr($rab["snils"], 0, 8));
                             $syncmedic->tab1cadis = $tab1c;
                             $syncmedic->adis_to_1c_syncdate = date("Y-m-d H:i:s");
                             $syncmedic->pol = $job->pol;
