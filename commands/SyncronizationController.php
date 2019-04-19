@@ -327,7 +327,7 @@ class SyncronizationController extends Controller {
                     //табельный номер 1С в адисе это последние 4 цифры поля инфо
                     $tab1c = substr($rab["snils"], 8);
 
-                    $medic = Temp1c::find()->where(['like', 'tabnum' , "%$tab1c"])->all();
+                    $medic = Temp1c::find()->filter(['like', 'tabnum' , "%$tab1c"])->all();
                     \Yii::info("Для сотрудника табельный 1с: $tab1c найдено <b>" . count($medic). "</b> совпадений", 'egis_pass');
                     if (count($medic) != 0) {
                         $syncmedic = new Sync1cEgisAdis();
