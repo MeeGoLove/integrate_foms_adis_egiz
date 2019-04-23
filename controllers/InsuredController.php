@@ -433,7 +433,10 @@ class InsuredController extends AppController {
                 if ($dbf) {
                     for ($i = 1; $i <= \dbase_numrecords($dbf); $i++) {
                         $rec = \dbase_get_record_with_names($dbf, $i);
-                        if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" && substr($rec["COMMENT"], 0, 5) != " dbeg" && iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
+                        if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" 
+                                && substr($rec["COMMENT"], 0, 5) != " dbeg" 
+                                //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
+                                && iconv("cp866", "utf-8",substr($rec["COMMENT"], 0, 6)) != "необхо" 
                         ) {
 //считать нужные значения из остатка
                             $ngod = $readQuery->getActiveSheet()->getCell("A" . $lineRead)->getValue();
@@ -528,7 +531,10 @@ class InsuredController extends AppController {
                             $lineWrite = 16;
                             for ($i = 1; $i <= \dbase_numrecords($dbf); $i++) {
                                 $rec = \dbase_get_record_with_names($dbf, $i);
-                                if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" && substr($rec["COMMENT"], 0, 5) != " dbeg" && iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New") {
+                                if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" 
+                                && substr($rec["COMMENT"], 0, 5) != " dbeg" 
+                                //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
+                                && iconv("cp866", "utf-8",substr($rec["COMMENT"], 0, 6)) != "необхо" ) {
                                     $writeQuery->getActiveSheet()->removeRow($lineWrite);
                                     $count--;
 //Магическая подмена
@@ -572,7 +578,10 @@ class InsuredController extends AppController {
                             for ($i = 1; $i <= \dbase_numrecords($dbf); $i++) {
 
                                 $rec = \dbase_get_record_with_names($dbf, $i);
-                                if (!(iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" && substr($rec["COMMENT"], 0, 5) != " dbeg" && iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New")) {
+                                if (!(iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" 
+                                && substr($rec["COMMENT"], 0, 5) != " dbeg" 
+                                //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
+                                && iconv("cp866", "utf-8",substr($rec["COMMENT"], 0, 6)) != "необхо" )) {
 //считать нужные значения из остатка
                                     $count++;
                                     $ngod = $readQuery->getActiveSheet()->getCell("A" . $lineRead)->getValue();
