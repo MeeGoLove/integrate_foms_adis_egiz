@@ -78,7 +78,9 @@ class InsuredXls extends Model {
             if ($needBreak) {
                 break;
             }
-            
+            if ($checkBreak == "end") {
+                $needBreak = true;
+            }
 //считать нужные сведения из исходного файла
             $fio = $notInsuredXLS->getActiveSheet()->getCell("B" . $start)->getCalculatedValue();
             $pol = $notInsuredXLS->getActiveSheet()->getCell("C" . $start)->getValue();
@@ -124,10 +126,6 @@ class InsuredXls extends Model {
             if (@gettype($call->numv) != "NULL") {
             $helpDeskXLS->getActiveSheet()->getCell("G" . ($i))->setValueExplicit($call->numv, 's');
             $helpDeskXLS->getActiveSheet()->getCell("H" . ($i))->setValueExplicit($call->stbr, 's');
-            
-            if ($checkBreak == "end") {
-                $needBreak = true;
-            }
             }             
             //$helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($dprmMySql, 's');
             $i++;
