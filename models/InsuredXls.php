@@ -70,7 +70,7 @@ class InsuredXls extends Model {
             $needBreak = false;
             $i = 3;
             $start = 16;
-            $cost = "1260,26";
+            $cost = "1272.86";
 
             while (true) {
                 //В начале каждой итерации проверяем, не пора ли покинуть цикл
@@ -106,18 +106,18 @@ class InsuredXls extends Model {
                 $statXLS->getActiveSheet()->getCell("L" . $i)->setValueExplicit($cost, 's');
 
 //И в строку файла Excel для стола справок            
-                $statXLS->getActiveSheet()->getCell("A" . ($i - 1))->setValue($i - 2);
-                $statXLS->getActiveSheet()->getCell("B" . ($i - 1))->setValueExplicit($fio, 's');
-                $statXLS->getActiveSheet()->getCell("C" . ($i - 1))->setValueExplicit($pol, 's');
-                $statXLS->getActiveSheet()->getCell("D" . ($i - 1))->setValueExplicit($dr, 's');
-                $statXLS->getActiveSheet()->getCell("E" . ($i - 1))->setValueExplicit($dprm, 's');
-                $statXLS->getActiveSheet()->getCell("F" . ($i - 1))->setValueExplicit($ngod, 's');
+                $helpDeskXLS->getActiveSheet()->getCell("A" . ($i - 1))->setValue($i - 2);
+                $helpDeskXLS->getActiveSheet()->getCell("B" . ($i - 1))->setValueExplicit($fio, 's');
+                $helpDeskXLS->getActiveSheet()->getCell("C" . ($i - 1))->setValueExplicit($pol, 's');
+                $helpDeskXLS->getActiveSheet()->getCell("D" . ($i - 1))->setValueExplicit($dr, 's');
+                $helpDeskXLS->getActiveSheet()->getCell("E" . ($i - 1))->setValueExplicit($dprm, 's');
+                $helpDeskXLS->getActiveSheet()->getCell("F" . ($i - 1))->setValueExplicit($ngod, 's');
                 $dprmMySql = date('Y-m-d', strtotime($dprm));
 
 //Нашли суточный номер вызова и номер п/с по годовому номеру и преобразованной дате 
                 $call = ArchiveCalls::find(['ngod' => $ngod, 'dprm' => $dprmMySql])->limit (1)->one();
-                $statXLS->getActiveSheet()->getCell("G" . ($i - 1))->setValueExplicit($call->numv, 's');
-                $statXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');
+                $helpDeskXLS->getActiveSheet()->getCell("G" . ($i - 1))->setValueExplicit($call->numv, 's');
+                $helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');
 
                 $i++;
                 $start++;
