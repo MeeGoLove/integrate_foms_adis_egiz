@@ -78,9 +78,7 @@ class InsuredXls extends Model {
             if ($needBreak) {
                 break;
             }
-            if ($checkBreak == "end") {
-                $needBreak = true;
-            }
+            
 //считать нужные сведения из исходного файла
             $fio = $notInsuredXLS->getActiveSheet()->getCell("B" . $start)->getCalculatedValue();
             $pol = $notInsuredXLS->getActiveSheet()->getCell("C" . $start)->getValue();
@@ -110,12 +108,12 @@ class InsuredXls extends Model {
             $statXLS->getActiveSheet()->getCell("L" . $i)->setValueExplicit($cost, 's');
 
 //И в строку файла Excel для стола справок            
-            $helpDeskXLS->getActiveSheet()->getCell("A" . ($i - 1))->setValue($i - 2);
-            $helpDeskXLS->getActiveSheet()->getCell("B" . ($i - 1))->setValueExplicit($fio, 's');
-            $helpDeskXLS->getActiveSheet()->getCell("C" . ($i - 1))->setValueExplicit($pol, 's');
-            $helpDeskXLS->getActiveSheet()->getCell("D" . ($i - 1))->setValueExplicit($dr, 's');
-            $helpDeskXLS->getActiveSheet()->getCell("E" . ($i - 1))->setValueExplicit($dprm, 's');
-            $helpDeskXLS->getActiveSheet()->getCell("F" . ($i - 1))->setValueExplicit($ngod, 's');
+            $helpDeskXLS->getActiveSheet()->getCell("A" . ($i))->setValue($i - 2);
+            $helpDeskXLS->getActiveSheet()->getCell("B" . ($i))->setValueExplicit($fio, 's');
+            $helpDeskXLS->getActiveSheet()->getCell("C" . ($i))->setValueExplicit($pol, 's');
+            $helpDeskXLS->getActiveSheet()->getCell("D" . ($i))->setValueExplicit($dr, 's');
+            $helpDeskXLS->getActiveSheet()->getCell("E" . ($i))->setValueExplicit($dprm, 's');
+            $helpDeskXLS->getActiveSheet()->getCell("F" . ($i))->setValueExplicit($ngod, 's');
             $dprmMySql = date('Y-m-d', strtotime($dprm));
 
 //Нашли суточный номер вызова и номер п/с по годовому номеру и преобразованной дате 
@@ -124,8 +122,12 @@ class InsuredXls extends Model {
                                 andWhere(['>=', 'dprm', $dprmMySql])->
                                 andWhere(['<=', 'dprm', $dprmMySql])->limit(1)->one();
             if (@gettype($call->numv) != "NULL") {
-            $helpDeskXLS->getActiveSheet()->getCell("G" . ($i - 1))->setValueExplicit($call->numv, 's');
-            $helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');
+            $helpDeskXLS->getActiveSheet()->getCell("G" . ($i))->setValueExplicit($call->numv, 's');
+            $helpDeskXLS->getActiveSheet()->getCell("H" . ($i))->setValueExplicit($call->stbr, 's');
+            
+            if ($checkBreak == "end") {
+                $needBreak = true;
+            }
             }             
             //$helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($dprmMySql, 's');
             $i++;
