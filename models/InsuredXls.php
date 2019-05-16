@@ -77,6 +77,9 @@ class InsuredXls extends Model {
                 if ($needBreak) {
                     break;
                 }
+                if ($checkBreak == "end") {
+                    $needBreak = true;
+                }
 //считать нужные сведения из исходного файла
                 $fio = $notInsuredXLS->getActiveSheet()->getCell("B" . $start)->getCalculatedValue();
                 $pol = $notInsuredXLS->getActiveSheet()->getCell("C" . $start)->getValue();
@@ -88,7 +91,7 @@ class InsuredXls extends Model {
                 $neotl = $notInsuredXLS->getActiveSheet()->getCell("I" . $start)->getCalculatedValue();
                 $extr = $notInsuredXLS->getActiveSheet()->getCell("J" . $start)->getCalculatedValue();
                 $rezl = $notInsuredXLS->getActiveSheet()->getCell("K" . $start)->getValue();
-                $ngod = $notInsuredXLS->getActiveSheet()->getCell("Z" . $start)->getValue();
+                $ngod = $notInsuredXLS->getActiveSheet()->getCell("AA" . $start)->getValue();
                 $checkBreak = $notInsuredXLS->getActiveSheet()->getCell("AB" . $start)->getValue();
 
 //Записать сведения в строку Excel файла для статиста
@@ -120,11 +123,8 @@ class InsuredXls extends Model {
                 $helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');
 
                 $i++;
-                $start++;
+                $start++;               
                 
-                if ($checkBreak == "end") {
-                    $needBreak = true;
-                }
             }
 //Сохранить все файлы
             $writerStat = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($statXLS);
