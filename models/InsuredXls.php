@@ -119,13 +119,13 @@ class InsuredXls extends Model {
             $dprmMySql = date('Y-m-d', strtotime($dprm));
 
 //Нашли суточный номер вызова и номер п/с по годовому номеру и преобразованной дате 
-            $call = ArchiveCalls::find()->
+            /*$call = ArchiveCalls::find()->
                                 where(['ngod' => $ngod])->
                                 andWhere(['>=', 'dprm', $dprmMySql])->
                                 andWhere(['<=', 'dprm', $dprmMySql])->limit(1)->one();
             $helpDeskXLS->getActiveSheet()->getCell("G" . ($i - 1))->setValueExplicit($call->numv, 's');
-            $helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');
-
+            $helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');*/
+            $helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($dprmMySql, 's');
             $i++;
             $start++;
         }
