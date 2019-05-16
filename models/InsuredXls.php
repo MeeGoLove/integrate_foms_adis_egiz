@@ -123,7 +123,7 @@ class InsuredXls extends Model {
                                 where(['ngod' => $ngod])->
                                 andWhere(['>=', 'dprm', $dprmMySql])->
                                 andWhere(['<=', 'dprm', $dprmMySql])->limit(1)->one();
-            if (@gettype($res->numv) != "NULL") {
+            if (@gettype($call->numv) != "NULL") {
             $helpDeskXLS->getActiveSheet()->getCell("G" . ($i - 1))->setValueExplicit($call->numv, 's');
             $helpDeskXLS->getActiveSheet()->getCell("H" . ($i - 1))->setValueExplicit($call->stbr, 's');
             }             
