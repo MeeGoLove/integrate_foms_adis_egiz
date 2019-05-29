@@ -75,14 +75,14 @@ class Weekdays extends Model {
             $appendix = str_replace("lastday", $lastday, $appendix);
             $i = 0;
             $days = "";
-            foreach ($model->saturdays as $day) {
+            foreach ($model->sundays as $day) {
                 $days = $days . "\t\tfutils:parse_date(<<\"$day\">>),\r\n";
                 $i++;
             }
             $daysZ = "";
             $i = 0;
-            foreach ($model->sundays as $day) {
-                if ($i == count($model->sundays) - 1) {
+            foreach ($model->saturdays as $day) {
+                if ($i == count($model->saturdays) - 1) {
                     $days = $days . "\t\tfutils:parse_date(<<\"$day\">>)";
                     $daysZ = $daysZ . "\t\tfutils:parse_date(<<\"$day\">>)";
                     continue;
