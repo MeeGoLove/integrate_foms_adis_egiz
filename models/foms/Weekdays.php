@@ -5,7 +5,7 @@
  * Each line should be prefixed with  * 
  */
 
-namespace app\models;
+namespace app\models\foms;
 
 use Yii;
 use yii\base\Model;

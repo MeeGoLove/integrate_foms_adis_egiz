@@ -9,7 +9,7 @@ namespace app\controllers;
 
 use yii;
 use app\controllers\AppController;
-use app\models\Weekdays;
+use app\models\foms\Weekdays;
 use app\models\Dbf;
 use app\models\ExpertParser;
 use yii\web\UploadedFile;
