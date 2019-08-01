@@ -319,12 +319,13 @@ class SyncronizationController extends Controller {
             //обошли в цикле всех сотрудников из справочника кадровая база
             foreach ($cmpstaff as $rab) {
                 //в справочнике кадровая база
-                //поле инфо должно быть из 12 символов
+                //поле инфо должно быть из 12 или 13 символов
                 //поле имя не должно содержать слова "НЕ ИСПОЛЬЗОВАТЬ"
                 //поле имя не должно быть из цифр
-                if (mb_strlen($rab["snils"]) == 12 and ! ((mb_strpos($rab["name"], 'НЕ ИС')
+                if ((mb_strlen($rab["snils"]) == 12 or mb_strlen($rab["snils"]) == 13) and ! ((mb_strpos($rab["name"], 'НЕ ИС')
                         or preg_match_all('/\d/', $rab["name"])))) {
                     //табельный номер 1С в адисе это последние 4 цифры поля инфо
+                    
                     $tab1c = substr($rab["snils"], 8);
 
                     $medic = Temp1c::find()->where(['like', 'tabnum' , "%$tab1c", false])->all();
