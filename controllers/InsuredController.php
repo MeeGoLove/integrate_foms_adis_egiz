@@ -239,7 +239,7 @@ class InsuredController extends AppController {
                     $egizReq->patrName = $otch;
                     $egizReq->birthDate = $dr;
                     try {
-                    //$docsEgiz = InsuredController::returnDocs($egizReq);
+                    $docsEgiz = InsuredController::returnDocs($egizReq);
                     }
                     catch (\Exception $ex)
                     {
@@ -261,12 +261,12 @@ class InsuredController extends AppController {
                         //9.2 Далее полис
                         //8.7 Если в ЕГИЗ найден полис, отбрасываем человека
                         if (count($docsEgiz["oms"]) != 0) {
-                            // $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("K" . $j, $docsEgiz["oms"]["nomdoc"], 's');
-                            //$writeSpreadsheet->getActiveSheet()->setCellValueExplicit("J" . $j, $docsEgiz["oms"]["seria"], 's');
-                            //$writeQuery->getActiveSheet()->setCellValueExplicit("M" . ($j - 8), $docsEgiz["oms"]["nomdoc"], 's');
-                            //$writeQuery->getActiveSheet()->setCellValueExplicit("L" . ($j - 8), $docsEgiz["oms"]["seria"], 's');
-                            // $x = $x . "Найден полис ОМС в ЕГИСЗ $j<br>";
-                            //$hasNumberOMS++;
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("K" . $j, $docsEgiz["oms"]["nomdoc"], 's');
+                            $writeSpreadsheet->getActiveSheet()->setCellValueExplicit("J" . $j, $docsEgiz["oms"]["seria"], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("M" . ($j - 8), $docsEgiz["oms"]["nomdoc"], 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("L" . ($j - 8), $docsEgiz["oms"]["seria"], 's');
+                            $x = $x . "Найден полис ОМС в ЕГИСЗ $j<br>";
+                            $hasNumberOMS++;
                             //continue;
                         }
 
