@@ -239,12 +239,10 @@ class InsuredController extends AppController {
                     $egizReq->patrName = $otch;
                     $egizReq->birthDate = $dr;
                     try {
-                    $docsEgiz = InsuredController::returnDocs($egizReq);
-                    }
-                    catch (\Exception $ex)
-                    {
+                        $docsEgiz = InsuredController::returnDocs($egizReq);
+                    } catch (\Exception $ex) {
                         //unset($docsEgiz);
-                        $x = $x ."<p>При поиске в ЕГИСЗ пациента № ".($i-9)." возникла подлая ошибка ;-( </p>";
+                        $x = $x . "<p>При поиске в ЕГИСЗ пациента № " . ($i - 9) . " возникла подлая ошибка ;-( </p>";
                     }
                     //Если найдено в ЕГИЗ, заполняем паспортные данные из ЕГИЗ
                     if (@gettype($docsEgiz) != "NULL") {
@@ -433,14 +431,21 @@ class InsuredController extends AppController {
                 if ($dbf) {
                     for ($i = 1; $i <= \dbase_numrecords($dbf); $i++) {
                         $rec = \dbase_get_record_with_names($dbf, $i);
-                        if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" 
-                                && substr($rec["COMMENT"], 0, 5) != " dbeg" 
+                        if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" && substr($rec["COMMENT"], 0, 5) != " dbeg"
                                 //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
-                                && iconv("cp866", "utf-8",substr($rec["COMMENT"], 0, 6)) != "необхо" 
+                                && iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "необхо"
                         ) {
 //считать нужные значения из остатка
                             $ngod = $readQuery->getActiveSheet()->getCell("A" . $lineRead)->getValue();
                             $fam = $readQuery->getActiveSheet()->getCell("C" . $lineRead)->getValue();
+                            //Проверить, совпадает ли фамилия в ответе ТФОМС и файле "остаток",
+                            //если не совпадает, значит в ТФОМС немного подправили, 
+                            //необходимо уведимить об этом оператора
+                            if ($fam != iconv("cp866", "utf-8", $rec["OLDFNAME"])) {
+                                $x = $x . "<p><b>$fam</b> в файле остаток не "
+                                        . "совпадает с <b>".iconv("cp866", "utf-8", $rec["OLDFNAME"])."</b>  "
+                                        . "в ответе ТФОМС, сверьте данные!</p>";
+                            }
                             $imya = $readQuery->getActiveSheet()->getCell("D" . $lineRead)->getValue();
                             $otch = $readQuery->getActiveSheet()->getCell("E" . $lineRead)->getValue();
                             $fio = "$fam $imya $otch";
@@ -496,7 +501,7 @@ class InsuredController extends AppController {
                         }
                         $lineRead++;
                     }
-                    $x = $x . "<p>Без правки количества могло быть\/есть $count готовых незастрахованных</p>";
+                    $x = $x . "<p>Без правки количества могло быть/есть <b>$count</b> готовых незастрахованных</p>";
 //А теперь магия, добавление/удаление необходимого числа незастрахованных
                     if ($model->needInsuredCount != 0) {
 //Идеальный случай имеющееся число совпало с нужным
@@ -531,10 +536,9 @@ class InsuredController extends AppController {
                             $lineWrite = 16;
                             for ($i = 1; $i <= \dbase_numrecords($dbf); $i++) {
                                 $rec = \dbase_get_record_with_names($dbf, $i);
-                                if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" 
-                                && substr($rec["COMMENT"], 0, 5) != " dbeg" 
-                                //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
-                                && iconv("cp866", "utf-8",substr($rec["COMMENT"], 0, 6)) != "необхо" ) {
+                                if (iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" && substr($rec["COMMENT"], 0, 5) != " dbeg"
+                                        //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
+                                        && iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "необхо") {
                                     $writeQuery->getActiveSheet()->removeRow($lineWrite);
                                     $count--;
 //Магическая подмена
@@ -578,10 +582,9 @@ class InsuredController extends AppController {
                             for ($i = 1; $i <= \dbase_numrecords($dbf); $i++) {
 
                                 $rec = \dbase_get_record_with_names($dbf, $i);
-                                if (!(iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" 
-                                && substr($rec["COMMENT"], 0, 5) != " dbeg" 
-                                //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
-                                && iconv("cp866", "utf-8",substr($rec["COMMENT"], 0, 6)) != "необхо" )) {
+                                if (!(iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "Найден" && substr($rec["COMMENT"], 0, 5) != " dbeg"
+                                        //&& iconv("cp866", "utf-8", substr($rec["ST"], 0, 8)) == "Find New"
+                                        && iconv("cp866", "utf-8", substr($rec["COMMENT"], 0, 6)) != "необхо" )) {
 //считать нужные значения из остатка
                                     $count++;
                                     $ngod = $readQuery->getActiveSheet()->getCell("A" . $lineRead)->getValue();
