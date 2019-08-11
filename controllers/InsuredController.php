@@ -478,7 +478,7 @@ class InsuredController extends AppController {
                             $writeQuery->getActiveSheet()->setCellValueExplicit("G$lineWrite", $ds, 's');
                             $writeQuery->getActiveSheet()->setCellValueExplicit("H$lineWrite", $dprm, 's');
                             $writeQuery->getActiveSheet()->setCellValueExplicit("K$lineWrite", $rezl, 's');
-                            $writeQuery->getActiveSheet()->setCellValueExplicit("L$lineWrite", "1272,86", 's');
+                            $writeQuery->getActiveSheet()->setCellValueExplicit("L$lineWrite", "1273,45", 's');
                             $writeQuery->getActiveSheet()->setCellValueExplicit("AA$lineWrite", $ngod, 's');
                             if ($prty < 5) {
                                 $writeQuery->getActiveSheet()->setCellValueExplicit("I$lineWrite", "-", 's');
@@ -502,7 +502,7 @@ class InsuredController extends AppController {
 //Идеальный случай имеющееся число совпало с нужным
                         if ($model->needInsuredCount == $count or \dbase_numrecords($dbf) < $model->needInsuredCount) {
                             $writeQuery->getActiveSheet()->removeRow($lineWrite);
-                            $sumStr = "Итого: " . str_replace(".", ",", round(1272.86 * $count, 2)) . " рублей";
+                            $sumStr = "Итого: " . str_replace(".", ",", round(1273.45 * $count, 2)) . " рублей";
                             $writeQuery->getActiveSheet()->setCellValue("K$lineWrite", $sumStr);
                             $writeQuery->getActiveSheet()->setCellValue("AB$lineWrite", "end");
                             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($writeQuery);
@@ -552,7 +552,7 @@ class InsuredController extends AppController {
                                 $writeQuery->getActiveSheet()->setCellValueExplicit("A" . ($i + 15), $i, 's');
                             }
                             $writeQuery->getActiveSheet()->removeRow($lineWrite);
-                            $sumStr = "Итого: " . str_replace(".", ",", round(1272.86 * $count, 2)) . " рублей";
+                            $sumStr = "Итого: " . str_replace(".", ",", round(1273.45 * $count, 2)) . " рублей";
                             $writeQuery->getActiveSheet()->setCellValue("K$lineWrite", $sumStr);
                             \dbase_pack($dbf);
                             \dbase_close($dbf);
@@ -622,7 +622,7 @@ class InsuredController extends AppController {
                                     $writeQuery->getActiveSheet()->setCellValueExplicit("G$lineWrite", $ds, 's');
                                     $writeQuery->getActiveSheet()->setCellValueExplicit("H$lineWrite", $dprm, 's');
                                     $writeQuery->getActiveSheet()->setCellValueExplicit("K$lineWrite", $rezl, 's');
-                                    $writeQuery->getActiveSheet()->setCellValueExplicit("L$lineWrite", "1272,86", 's');
+                                    $writeQuery->getActiveSheet()->setCellValueExplicit("L$lineWrite", "1273,45", 's');
                                     $writeQuery->getActiveSheet()->setCellValueExplicit("AA$lineWrite", $ngod, 's');
                                     if ($prty < 5) {
                                         $writeQuery->getActiveSheet()->setCellValueExplicit("I$lineWrite", "-", 's');
@@ -680,7 +680,7 @@ class InsuredController extends AppController {
 
                             $lineWrite = $count + 16;
                             $writeQuery->getActiveSheet()->removeRow($lineWrite);
-                            $sumStr = "Итого: " . str_replace(".", ",", round(1272.86 * $count, 2)) . " рублей";
+                            $sumStr = "Итого: " . str_replace(".", ",", round(1273.45 * $count, 2)) . " рублей";
                             $writeQuery->getActiveSheet()->setCellValue("K$lineWrite", $sumStr);
                             \dbase_pack($dbf);
                             \dbase_close($dbf);
@@ -703,7 +703,7 @@ class InsuredController extends AppController {
 //Если не важно число незастрахованных
                     else {
                         $writeQuery->getActiveSheet()->removeRow($lineWrite);
-                        $sumStr = "Итого: " . str_replace(".", ",", round(1272.86 * $count, 2)) . " рублей";
+                        $sumStr = "Итого: " . str_replace(".", ",", round(1273.45 * $count, 2)) . " рублей";
                         $writeQuery->getActiveSheet()->setCellValue("K$lineWrite", $sumStr);
                         \dbase_close($dbf);
                         $writeQuery->getActiveSheet()->setCellValue("AB$lineWrite", "end");
