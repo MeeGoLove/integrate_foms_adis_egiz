@@ -441,9 +441,9 @@ class InsuredController extends AppController {
                             //Проверить, совпадает ли фамилия в ответе ТФОМС и файле "остаток",
                             //если не совпадает, значит в ТФОМС немного подправили, 
                             //необходимо уведимить об этом оператора
-                            if ($fam != iconv("cp866", "utf-8", $rec["OLDFNAME"])) {
+                            if ($fam != preg_replace('/\s+$/', '', iconv("cp866", "utf-8", $rec["OLDFNAME"]))) {
                                 $x = $x . "<p><b>$fam</b> в файле остаток не "
-                                        . "совпадает с <b>".iconv("cp866", "utf-8", $rec["OLDFNAME"])."</b>  "
+                                        . "совпадает с <b>" . iconv("cp866", "utf-8", $rec["OLDFNAME"]) . "</b>  "
                                         . "в ответе ТФОМС, сверьте данные!</p>";
                             }
                             $imya = $readQuery->getActiveSheet()->getCell("D" . $lineRead)->getValue();
