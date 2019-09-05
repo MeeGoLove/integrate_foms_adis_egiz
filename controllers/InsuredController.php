@@ -373,12 +373,13 @@ class InsuredController extends AppController {
                 $writer->save("uploads/запрос на идентификацию.xls");
                 sleep(15);
             }
-            $check = $emptyFIO + $bukvFIO + $kinds + $military + $aliens +
+            $check = $noCorrectBirth + $emptyFIO + $bukvFIO + $kinds + $military + $aliens +
                     $hasNumberOMS + $repeated + $typo + $byTypeDoc + $noCorrectGenger;
             $x = "$x<br>"
                     . "Проверенно $i потенциальных незастрахованных<br>"
                     . "На идентификацию будет отправлено " . ($j - 8) . " человек<br>"
                     . "<b>Отброшено:</b><br>"
+                    . "$noCorrectBirth - некорректная дата рождения<br>"
                     . "$emptyFIO - пустые инициалы ФИО<br>" .
                     "$bukvFIO - ФИО записано инициалами<br>"
                     . "$kinds - дети, рожденные недавно<br>" .
@@ -1052,12 +1053,12 @@ class InsuredController extends AppController {
                         $imya = $req->name;
                         $otch = $req->patrName;
                         $dr = date("d.m.Y", strtotime(str_replace("+05:00", "", $req->birthDate)));
-                        echo "$fam $imya $otch $dr<br>";
+                        Yii::$app->session->setFlash('success', "$fam $imya $otch $dr");                        
 //1. Совпали ФИО и ДР
                         if (mb_strtolower($fam) == mb_strtolower($individual->surname) and
                                 mb_strtolower($imya) == mb_strtolower($individual->name) and
                                 mb_strtolower($otch) == mb_strtolower($individual->patrName)) {
-                            echo "Из много физ. лиц нашелся подходящий<br>";
+                            Yii::$app->session->setFlash('success', "Из много физ. лиц нашелся подходящий!");
                             $docsReq = new getIndividualDocuments();
                             $docsReq->param = $id;
                             $docsResp = Yii::$app->individuals->send_param($docsReq);
