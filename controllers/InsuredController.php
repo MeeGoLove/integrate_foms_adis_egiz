@@ -265,7 +265,7 @@ class InsuredController extends AppController {
                             $writeQuery->getActiveSheet()->setCellValueExplicit("L" . ($j - 8), $docsEgiz["oms"]["seria"], 's');
                             $x = $x . "Найден полис ОМС в ЕГИСЗ $j<br>";
                             $hasNumberOMS++;
-                            //continue;
+                            continue;
                         }
 
                         //9.3 Паспорт или свидетельство о рождении
