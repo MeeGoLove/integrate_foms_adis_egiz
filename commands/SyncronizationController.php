@@ -328,7 +328,7 @@ class SyncronizationController extends Controller {
                     
                     $tab1c = substr($rab["snils"], 8);
 
-                    $medic = Temp1c::find()->where(['=', 'tabnum' , "$tab1c", false])->all();
+                    $medic = Temp1c::find()->where(['tabnum' => "$tab1c"])->all();
                     //\Yii::info("Для сотрудника табельный 1с: $tab1c найдено <b>" . count($medic). "</b> совпадений", 'egis_pass');
                     if (count($medic) != 0) {
                         $syncmedic = new Sync1cEgisAdis();
