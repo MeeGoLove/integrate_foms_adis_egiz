@@ -328,7 +328,7 @@ class SyncronizationController extends Controller {
                     
                     $tab1c = substr($rab["snils"], 8);
 
-                    $medic = Temp1c::find()->where(['like', 'tabnum' , "%$tab1c", false])->all();
+                    $medic = Temp1c::find()->where(['=', 'tabnum' , "$tab1c", false])->all();
                     //\Yii::info("Для сотрудника табельный 1с: $tab1c найдено <b>" . count($medic). "</b> совпадений", 'egis_pass');
                     if (count($medic) != 0) {
                         $syncmedic = new Sync1cEgisAdis();
@@ -409,6 +409,7 @@ class SyncronizationController extends Controller {
         $response = \Yii::$app->smp1c->send_param($request)->return->el;
         foreach ($response as $el) {
             $addMedics = new Temp1c();
+            $trunketedTabNum = str_replace("0000-", "", $el->tabnum);
             $addMedics->tabnum = $el->tabnum;
             $addMedics->fullname = $el->fullname;
             $addMedics->job = $el->job;
