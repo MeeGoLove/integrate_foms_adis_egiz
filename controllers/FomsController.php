@@ -315,6 +315,16 @@ class FomsController extends AppController {
                     //echo $hm->Z_SL->SL->IDDOKT . " стоимость вызова 1920.21\r\n";
                 }
             }
+            
+            //Исправление косяка с неотложкой, почему-то у некоторых случаев 
+            //не совпало значение поля DET в случае и в услуге неотложной помощи
+            //Исправление от 28.10.2019
+            if (@gettype($hm->Z_SL->SL->USL->DET) != "NULL" AND (string) $hm->Z_SL->SL->DET != (string) $hm->Z_SL->SL->USL->DET) {
+                $hm->Z_SL->SL->USL->DET = $hm->Z_SL->SL->DET;
+
+//continue;
+            }
+
             //если нет полиса, то нужно удалить узел VPOLIS, значение 0 недопустимо! 
             if ($hm->PACIENT->VPOLIS == "0") {
                 unset($hm->PACIENT->VPOLIS);
@@ -349,13 +359,13 @@ class FomsController extends AppController {
                         $neotl++; //счетчик неотложных вызовов
 
                         if ((date("H", $time_mission) >= 19)
-                                /*or (
-                                date("H", $time_mission) >= 14
-                                and (
-                                date("d", $time_mission) == 3
-                                or date("d", $time_mission) == 4
-                                or date("d", $time_mission) == 8)
-                                )*/) {
+                        /* or (
+                          date("H", $time_mission) >= 14
+                          and (
+                          date("d", $time_mission) == 3
+                          or date("d", $time_mission) == 4
+                          or date("d", $time_mission) == 8)
+                          ) */) {
                             //echo "<p style=\"color:#ff0000\">Неотложка после 19:00, карта " . $hm->Z_SL->SL->NHISTORY . "</p>";
                             unset($hm->Z_SL->SL->USL);
                             unset($hm->Z_SL->SL->COMENTSL->METHOD);
