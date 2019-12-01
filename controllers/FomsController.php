@@ -382,7 +382,7 @@ class FomsController extends AppController {
             $hours = floor($minutes / 60); // кол-во полных часов
             $days = floor($hours / 24); // кол-во полных дней
             $years = floor($days / 365); // кол-во полных лет
-            if ($years < 14 AND ( (int) $lhm->DOCTYPE != 3 AND (int) $lhm->DOCTYPE != 0)) {
+            if ($years < 14 AND ( (int) $lhm->DOCTYPE != 3 AND (int) $lhm->DOCTYPE != 0  AND (int) $lhm->DOCTYPE != 18)) {
                 $log = $log . "У пациента с ID_PAC='" . $hm->PACIENT->ID_PAC . "' исправлена ДР на неопределенную\r\n";
                 //Пишем что достоверность равна 6 (ДР не соответствует календарю)
                 if (@gettype($lhm->DOST) != "NULL" AND $lhm->DOST != 6) {
