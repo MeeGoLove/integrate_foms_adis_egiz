@@ -385,7 +385,9 @@ class FomsController extends AppController {
             if ($years < 14 AND ( $lhm->DOCTYPE != 3 OR $lhm->DOCTYPE != 0)) {
                 $log = $log . "У пациента с ID_PAC='" . $hm->PACIENT->ID_PAC . "' исправлена ДР на неопределенную\r\n";
                 //Пишем что достоверность равна 6 (ДР не соответствует календарю)
-                $lhm->addChild('DOST', 6);
+                if (@gettype($lhm->DOST) != "NULL" AND $lhm->DOST != 6) {
+                    $lhm->addChild('DOST', 6);
+                }
                 //Исправляем ДР на 1900 год, все равно она не верная
                 $lhm->DR = "1900-01-01";
                 //Детский профиль в случаях делаем не детским
