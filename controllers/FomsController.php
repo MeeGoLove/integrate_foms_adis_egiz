@@ -366,10 +366,41 @@ class FomsController extends AppController {
             if ($hm->PACIENT->VPOLIS == "0") {
                 unset($hm->PACIENT->VPOLIS);
             }
+
+
+            $lhm = $xmlLHM->PERS[$xmlHM->count() - 3 - $hm_i];
+
+            /*
+             * Исправление даты рождения у лиц младше 14 лет
+             * у которых есть документы,
+             * которые не могут быть у детей (паспорта и т.д.)
+             */
+            $birth = strtotime($lhm->DR);
+            $today = strtotime($hm->Z_SL->SL->DATE_2);
+            $age = ($today - $birth);
+            $minutes = floor($age / 60); // кол-во полных минут
+            $hours = floor($minutes / 60); // кол-во полных часов
+            $days = floor($hours / 24); // кол-во полных дней
+            $years = floor($days / 365); // кол-во полных лет
+            if ($years < 14 AND ( $lhm->DOCTYPE != 3 OR $lhm->DOCTYPE != 0)) {
+                $log = $log . "У пациента с ID_PAC='" . $hm->PACIENT->ID_PAC . "' исправлена ДР на неопределенную\r\n";
+                //Пишем что достоверность равна 6 (ДР не соответствует календарю)
+                $lhm->addChild('DOST', 6);
+                //Исправляем ДР на 1900 год, все равно она не верная
+                $lhm->DR = "1900-01-01";
+                //Детский профиль в случаях делаем не детским
+                $hm->Z_SL->SL->DET = 0;
+                if (@gettype($hm->Z_SL->SL->USL->DET) != "NULL") {
+                    $hm->Z_SL->SL->USL->DET = 0;
+                }
+            }
+
+
+
             //проверяем что вызов не переходит на следующий месяц
             $time_end = strtotime(date("Y-m") . "-01 00:00");
             //Для отладки!!!
-            $time_end = strtotime("2019-11-28 00:00");
+            //$time_end = strtotime("2019-11-28 00:00");
             $time_mission = strtotime((string) $hm->Z_SL->SL->DATE_2 . " " . (string) $hm->Z_SL->SL->COMENTSL->TIME_MISSION);
             //Проверка, что окончание вызова не ушли на следующий месяц
             if (($time_end - $time_mission) > 0) {
@@ -441,7 +472,9 @@ class FomsController extends AppController {
                     //{
                     //В файле LHM от Zotonic персональные данные идут в обратном порядке относительно 
                     //случаев, поэтому легче двигаться по индексам в обратном порядке, что и сделано
-                    $lhm = $xmlLHM->PERS[$xmlHM->count() - 3 - $hm_i];
+
+
+
                     if ((string) $hm->PACIENT->ID_PAC === (string) $lhm->ID_PAC) {
                         $res = $lhm->asXML();
                         file_put_contents("reestr/lhm101.xml", $res, FILE_APPEND);
@@ -509,7 +542,6 @@ class FomsController extends AppController {
                     //генерируем SL_ID
                     $hm->Z_SL->SL->SL_ID = substr(hash_hmac("sha224", $hm->Z_SL->SL->asXML(), "www.orenssmp.ru"), 0, 32);
                     $n_zapOnko++; //увеличим номер в реестре
-                    $lhm = $xmlLHM->PERS[$xmlHM->count() - 3 - $hm_i];
                     if ((string) $hm->PACIENT->ID_PAC === (string) $lhm->ID_PAC) {
                         $res = $lhm->asXML();
                         file_put_contents("reestr/chm101.xml", $res, FILE_APPEND);
@@ -566,7 +598,7 @@ class FomsController extends AppController {
                 if ($hm->Z_SL->SL->DS1 != "C97") {
                     $res = $hm->asXML();
                     file_put_contents("reestr/hm101_add.xml", $res, FILE_APPEND);
-                    $lhm = $xmlLHM->PERS[$xmlHM->count() - 3 - $hm_i];
+
                     if ((string) $hm->PACIENT->ID_PAC === (string) $lhm->ID_PAC) {
                         $not_add_lhm++;
                         $res = $lhm->asXML();
@@ -575,7 +607,7 @@ class FomsController extends AppController {
                 } else {
                     $res = $hm->asXML();
                     file_put_contents("reestr/cm101_add.xml", $res, FILE_APPEND);
-                    $lhm = $xmlLHM->PERS[$xmlHM->count() - 3 - $hm_i];
+
                     if ((string) $hm->PACIENT->ID_PAC === (string) $lhm->ID_PAC) {
                         $not_add_lhm++;
                         $res = $lhm->asXML();
